@@ -1,0 +1,8 @@
+apply plugin: 'com.palantir.gradle-plugin-testing'
+apply plugin: 'java'
+apply plugin: 'com.palantir.external-publish-jar'
+
+
+dependencies {
+    testImplementation gradleTestKit()
+}
