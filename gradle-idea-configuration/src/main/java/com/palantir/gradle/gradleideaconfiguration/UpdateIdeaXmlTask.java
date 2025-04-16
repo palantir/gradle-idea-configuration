@@ -102,22 +102,32 @@ public abstract class UpdateIdeaXmlTask extends DefaultTask {
     }
 
     private IdeaComponent updateExternalDependencies(IdeaComponent component, Set<PluginDependency> dependencies) {
-        List<IdeaPlugin> plugins = dependencies.stream()
+        List<IdeaPlugin> dependencyPlugins = dependencies.stream()
                 .map(dep -> IdeaPlugin.builder()
                         .id(dep.name())
                         .minVersion(Optional.ofNullable(dep.minVersion()))
                         .build())
                 .collect(Collectors.toList());
 
-        Map<String, IdeaPlugin> existingMap =
-                component.plugins().stream().collect(Collectors.toMap(IdeaPlugin::id, Function.identity()));
+        List<IdeaPlugin> existingPlugins = component.plugins();
 
-        List<IdeaPlugin> remaining = existingMap.entrySet().stream()
-                .filter(entry -> !dependencies.contains(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .toList();
+        Map<String, IdeaPlugin> uniquePlugins = Stream.concat(dependencyPlugins.stream(), existingPlugins.stream())
+                .collect(Collectors.toMap(IdeaPlugin::id, Function.identity(), (plugin1, plugin2) -> {
+                    if (plugin1.minVersion().isPresent() && plugin2.minVersion().isPresent()) {
+                        return (PluginDependency.compareVersions(
+                                                plugin1.minVersion().get(),
+                                                plugin2.minVersion().get())
+                                        >= 0)
+                                ? plugin1
+                                : plugin2;
+                    }
+                    if (plugin1.minVersion().isPresent()) {
+                        return plugin1;
+                    }
+                    return plugin2;
+                }));
 
-        List<IdeaPlugin> combined = Stream.concat(plugins.stream(), remaining.stream())
+        List<IdeaPlugin> combined = uniquePlugins.values().stream()
                 .sorted(Comparator.comparing(IdeaPlugin::id))
                 .collect(Collectors.toList());
 

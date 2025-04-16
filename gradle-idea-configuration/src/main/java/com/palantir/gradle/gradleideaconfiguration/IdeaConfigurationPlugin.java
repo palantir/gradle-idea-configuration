@@ -33,12 +33,12 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
             throw new GradleException("Must be applied only to root project");
         }
 
+        IdeaConfigurationExtension extension =
+                project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class, project);
+
         if (!Boolean.getBoolean("idea.active")) {
             return;
         }
-
-        IdeaConfigurationExtension extension =
-                project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class, project);
 
         TaskProvider<UpdateIdeaXmlTask> updateTask = project.getTasks()
                 .register("updateIdeaXml", UpdateIdeaXmlTask.class, task -> {

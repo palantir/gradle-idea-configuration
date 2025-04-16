@@ -156,7 +156,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         assert externalDepsFile.text.trim() == expected
     }
 
-    def "merges with existing externalDependencies.xml higher value used from file"() {
+    def "merges with existing externalDependencies.xml higher value used from external file"() {
         //language=gradle
         buildFile << """
             ideaConfiguration {
@@ -196,7 +196,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         assert externalDepsFile.text.trim() == expected
     }
 
-    def "merges with existing externalDependencies.xml higher value used from build"() {
+    def "merges with existing externalDependencies.xml higher value used from build file"() {
         //language=gradle
         buildFile << """
             ideaConfiguration {
