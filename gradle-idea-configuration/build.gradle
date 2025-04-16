@@ -1,8 +1,38 @@
 apply plugin: 'com.palantir.gradle-plugin-testing'
-apply plugin: 'java'
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'groovy'
 apply plugin: 'com.palantir.external-publish-jar'
 
 
 dependencies {
+    implementation 'com.google.guava:guava'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+
+    compileOnly 'org.immutables:value::annotations'
+    annotationProcessor 'org.immutables:value'
+
     testImplementation gradleTestKit()
+    testImplementation 'com.netflix.nebula:nebula-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+gradlePlugin {
+    website = 'https://github.com/palantir/gradle-idea-configuration'
+    vcsUrl = 'https://github.com/palantir/gradle-idea-configuration'
+
+    plugins {
+        ideaConfiguration {
+            id = 'com.palantir.idea-configuration'
+            implementationClass = 'com.palantir.gradle.gradleideaconfiguration.IdeaConfigurationPlugin'
+            displayName = 'Plugin to manage IDEA configuration files'
+            description = displayName
+        }
+    }
 }

@@ -45,6 +45,8 @@ allprojects {
     version rootProject.version
 }
 
+
+
 javaVersions {
     libraryTarget = 17
 }
