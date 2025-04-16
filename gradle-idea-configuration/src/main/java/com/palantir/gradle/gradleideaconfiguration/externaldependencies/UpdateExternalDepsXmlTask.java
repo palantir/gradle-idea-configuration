@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.gradle.gradleideaconfiguration;
+package com.palantir.gradle.gradleideaconfiguration.externaldependencies;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.ctc.wstx.stax.WstxOutputFactory;
@@ -23,9 +23,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.palantir.gradle.gradleideaconfiguration.externaldependencies.IdeaComponent;
-import com.palantir.gradle.gradleideaconfiguration.externaldependencies.IdeaPlugin;
-import com.palantir.gradle.gradleideaconfiguration.externaldependencies.IdeaProject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -44,7 +41,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-public abstract class UpdateIdeaXmlTask extends DefaultTask {
+public abstract class UpdateExternalDepsXmlTask extends DefaultTask {
     private static final ObjectMapper XML_MAPPER = new XmlMapper(new WstxInputFactory(), new WstxOutputFactory())
             .enable(SerializationFeature.INDENT_OUTPUT)
             .registerModule(new GuavaModule())
@@ -56,7 +53,7 @@ public abstract class UpdateIdeaXmlTask extends DefaultTask {
     @OutputFile
     public abstract RegularFileProperty getOutputFile();
 
-    public UpdateIdeaXmlTask() {
+    public UpdateExternalDepsXmlTask() {
         getOutputFile().set(getProject().file(".idea/externalDependencies.xml"));
     }
 

@@ -115,6 +115,34 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         assert externalDepsFile.text.trim() == expected
     }
 
+    def "higher version of the same dependency is taken with different length versions"() {
+        //language=gradle
+        buildFile << """
+            ideaConfiguration {
+                externalDependency 'test', '0.1.0.1'
+                externalDependency 'test', '0.1.0'
+            }
+        """.stripIndent(true)
+
+        when: 'we run the first time'
+        runTasksSuccessfully('-Didea.active=true')
+
+        then: 'we generate the correct config'
+        def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
+        externalDepsFile.exists()
+
+        //language=xml
+        def expected = """
+          <project version="4">
+            <component name="ExternalDependencies">
+              <plugin id="test" min-version="0.1.0.1"/>
+            </component>
+          </project>
+        """.stripIndent(true).trim()
+
+        assert externalDepsFile.text.trim() == expected
+    }
+
     def "merges with existing externalDependencies.xml"() {
         //language=gradle
         buildFile << """
