@@ -77,8 +77,8 @@ public abstract class UpdateIdeaXmlTask extends DefaultTask {
             ideaProject = XML_MAPPER.readValue(file, IdeaProject.class);
             if (ideaProject.components().stream().noneMatch(c -> "ExternalDependencies".equals(c.name()))) {
                 getLogger()
-                        .warn(
-                                "No 'ExternalDependencies' component found in the existing XML file. Creating a new one.");
+                        .warn("No 'ExternalDependencies' component found in the existing XML file. Creating a new"
+                                + " one.");
                 ideaProject = createDefaultIdeaProject();
             }
         }

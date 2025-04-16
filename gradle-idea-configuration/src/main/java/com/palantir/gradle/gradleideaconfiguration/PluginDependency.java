@@ -69,11 +69,11 @@ public final class PluginDependency implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (!(o instanceof PluginDependency that)) {
+        if (!(object instanceof PluginDependency that)) {
             return false;
         }
         return Objects.equals(name, that.name);
