@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Add external dependency xml configuration
+  links:
+  - https://github.com/palantir/gradle-idea-configuration/pull/2

@@ -3,3 +3,22 @@
 </p>
 
 # gradle-idea-configuration
+
+This gradle plugin allows for the configuration of Intellij IDEA xml files.
+
+To apply the plugin:
+
+```gradle
+apply plugin: 'com.palantir.idea-configuration'
+```
+
+## Configuration
+
+### External Dependencies
+
+```gradle
+ideaConfiguration {
+    externalDependency 'CheckStyle-IDEA'                // plugin-id
+    externalDependency 'palantir-java-format', '2.57.0' // plugin-id, min-version
+}
+```
