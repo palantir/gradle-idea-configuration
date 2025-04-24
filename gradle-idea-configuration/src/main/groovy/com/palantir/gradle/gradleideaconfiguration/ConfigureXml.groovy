@@ -26,32 +26,32 @@ class ConfigureXml {
             }
         }
     }
-    
+
     static void configureExternalDependencies(Node rootNode, PluginDependency dependency) {
         def externalDependencies = matchOrCreateChild(rootNode, 'component', [name: 'ExternalDependencies'])
         def pluginNode = matchChild(externalDependencies, 'plugin', [id: dependency.name()]).orElse(null)
+        def minVersion = dependency.minVersion()
         if (pluginNode) {
             String existingVersion = pluginNode.'@min-version'
-            if (existingVersion) {
-                // update to the higher version
-                dependency.updateMinVersion(existingVersion)
+            if (existingVersion && PluginDependency.compareVersions(minVersion, existingVersion) < 0) {
+                minVersion = existingVersion
             }
         }
-        matchOrCreateChild(externalDependencies, 'plugin', [id: dependency.name()], [:], ['min-version' : dependency.minVersion()])
+        matchOrCreateChild(externalDependencies, 'plugin', [id: dependency.name()], ['min-version' : minVersion])
     }
 
     static void configureExternalDependencies(Node rootNode, String dependency) {
         def externalDependencies = matchOrCreateChild(rootNode, 'component', [name: 'ExternalDependencies'])
-        matchOrCreateChild(externalDependencies, 'plugin', [id: dependency], [:])
+        matchOrCreateChild(externalDependencies, 'plugin', [id: dependency])
     }
 
 
-    private static Node matchOrCreateChild(Node base, String name, Map attributes = [:], Map defaults = [:], Map overrides = [:]) {
+    private static Node matchOrCreateChild(Node base, String name, Map attributes = [:], Map overrides = [:]) {
         matchChild(base, name, attributes).map {it -> {
             it.attributes().putAll(overrides)
             return it
         } }.orElseGet {
-            base.appendNode(name, attributes + defaults + overrides)
+            base.appendNode(name, attributes + overrides)
         }
 
     }

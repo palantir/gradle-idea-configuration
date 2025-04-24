@@ -76,11 +76,11 @@ public final class PluginDependency implements Serializable {
         if (!(object instanceof PluginDependency that)) {
             return false;
         }
-        return Objects.equals(name, that.name);
+        return Objects.equals(name, that.name) && Objects.equals(minVersion, that.minVersion);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hash(name, minVersion);
     }
 }

@@ -24,14 +24,14 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-public abstract class UpdateIdeaXmlTask extends DefaultTask {
+public abstract class UpdateExternalDependenciesXml extends DefaultTask {
     @Input
     public abstract SetProperty<PluginDependency> getDependencies();
 
     @OutputFile
     public abstract RegularFileProperty getOutputFile();
 
-    public UpdateIdeaXmlTask() {
+    public UpdateExternalDependenciesXml() {
         getOutputFile().set(getProject().file(".idea/externalDependencies.xml"));
     }
 

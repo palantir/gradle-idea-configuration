@@ -40,8 +40,8 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
             return;
         }
 
-        TaskProvider<UpdateIdeaXmlTask> updateTask = project.getTasks()
-                .register("updateExternalDepsXml", UpdateIdeaXmlTask.class, task -> {
+        TaskProvider<UpdateExternalDependenciesXml> updateTask = project.getTasks()
+                .register("updateExternalDepsXml", UpdateExternalDependenciesXml.class, task -> {
                     task.getDependencies()
                             .set(project.provider(() -> new HashSet<>(extension.dependenciesContainer())));
                 });
