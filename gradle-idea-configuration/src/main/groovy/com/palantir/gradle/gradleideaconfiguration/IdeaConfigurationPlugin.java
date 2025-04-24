@@ -16,7 +16,6 @@
 
 package com.palantir.gradle.gradleideaconfiguration;
 
-import com.palantir.gradle.gradleideaconfiguration.externaldependencies.UpdateExternalDepsXmlTask;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,8 +40,8 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
             return;
         }
 
-        TaskProvider<UpdateExternalDepsXmlTask> updateTask = project.getTasks()
-                .register("updateExternalDepsXml", UpdateExternalDepsXmlTask.class, task -> {
+        TaskProvider<UpdateIdeaXmlTask> updateTask = project.getTasks()
+                .register("updateExternalDepsXml", UpdateIdeaXmlTask.class, task -> {
                     task.getDependencies()
                             .set(project.provider(() -> new HashSet<>(extension.dependenciesContainer())));
                 });

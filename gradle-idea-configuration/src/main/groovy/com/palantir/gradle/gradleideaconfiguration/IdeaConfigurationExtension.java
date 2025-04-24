@@ -16,7 +16,6 @@
 
 package com.palantir.gradle.gradleideaconfiguration;
 
-import com.palantir.gradle.gradleideaconfiguration.externaldependencies.PluginDependency;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 

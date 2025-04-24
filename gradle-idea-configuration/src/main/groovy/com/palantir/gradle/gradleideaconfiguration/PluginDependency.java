@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.gradle.gradleideaconfiguration.externaldependencies;
+package com.palantir.gradle.gradleideaconfiguration;
 
 import java.io.Serializable;
 import java.util.Objects;
