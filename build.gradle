@@ -43,7 +43,7 @@ allprojects {
         mavenCentral() { metadataSources { mavenPom(); ignoreGradleMetadataRedirection() } }
     }
 
-    group 'com.palantir.gradle.gradleideaconfiguration'
+    group 'com.palantir.gradle.idea-configuration'
     version rootProject.version
 }
 

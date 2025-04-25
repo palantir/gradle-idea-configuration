@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.palantir.gradle.gradleideaconfiguration
+package com.palantir.gradle.ideaconfiguration
 import nebula.test.IntegrationSpec
-import org.gradle.api.GradleException
-
 
 class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
 

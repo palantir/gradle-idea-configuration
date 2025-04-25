@@ -24,7 +24,7 @@ gradlePlugin {
     plugins {
         ideaConfiguration {
             id = 'com.palantir.idea-configuration'
-            implementationClass = 'com.palantir.gradle.gradleideaconfiguration.IdeaConfigurationPlugin'
+            implementationClass = 'com.palantir.gradle.ideaconfiguration.IdeaConfigurationPlugin'
             displayName = 'Plugin to manage IDEA configuration files'
             description = displayName
         }

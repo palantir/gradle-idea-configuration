@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.gradle.gradleideaconfiguration
+package com.palantir.gradle.ideaconfiguration
 
 class ConfigureXml {
     static void configureExternalDependencies(Node rootNode, Set dependencies) {
