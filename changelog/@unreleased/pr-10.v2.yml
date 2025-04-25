@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: rename package to `com.palantir.gradle.ideaconfiguration`
+  links:
+  - https://github.com/palantir/gradle-idea-configuration/pull/10
