@@ -10,4 +10,4 @@ buildscript {
 apply plugin: 'com.palantir.jdks.settings'
 rootProject.name = 'gradle-idea-configuration-root'
 
-include 'idea-configuration'
+include 'gradle-idea-configuration'
