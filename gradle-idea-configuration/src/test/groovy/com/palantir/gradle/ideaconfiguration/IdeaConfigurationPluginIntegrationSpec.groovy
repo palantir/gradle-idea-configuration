@@ -46,7 +46,11 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         //language=gradle
         buildFile << """
             ideaConfiguration {
-                externalDependency 'test', '0.1.0'
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    }
+                }
             }
         """.stripIndent(true)
 
@@ -62,7 +66,11 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         //language=gradle
         buildFile << """
             ideaConfiguration {
-                externalDependency 'test', '0.1.0'
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    }
+                }
             }
         """.stripIndent(true)
 

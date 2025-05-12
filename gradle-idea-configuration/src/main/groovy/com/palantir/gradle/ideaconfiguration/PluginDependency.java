@@ -16,36 +16,43 @@
 
 package com.palantir.gradle.ideaconfiguration;
 
-import java.io.Serializable;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
+import org.gradle.api.Named;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.SetProperty;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
 
-public final class PluginDependency implements Serializable {
+public abstract class PluginDependency implements Named {
     private static final Pattern DOT_SPLITTER = Pattern.compile("\\.");
 
-    private final String name;
-    private String minVersion;
+    @Internal("Used to build up required min versions, not the final min version that is used")
+    public abstract SetProperty<String> getMinRequiredVersions();
 
-    public PluginDependency(String name) {
-        this.name = name;
+    @Input
+    @Override
+    public abstract String getName();
+
+    @Input
+    public final Provider<String> getMinVersion() {
+        return getMinRequiredVersions().map(requiredMinVersions -> {
+            return requiredMinVersions.stream()
+                    .max(PluginDependency::compareVersions)
+                    .orElse(null);
+        });
     }
 
-    public String name() {
-        return name;
+    public final void atLeastVersion(String candidateVersion) {
+        getMinRequiredVersions().add(candidateVersion);
     }
 
-    public String minVersion() {
-        return minVersion;
+    public final void atLeastVersion(Property<String> candidateVersion) {
+        getMinRequiredVersions().add(candidateVersion);
     }
 
-    public void updateMinVersion(String candidateVersion) {
-        if (minVersion == null || compareVersions(candidateVersion, minVersion) > 0) {
-            this.minVersion = candidateVersion;
-        }
-    }
-
-    public static int compareVersions(String v1, String v2) {
+    private static int compareVersions(String v1, String v2) {
         int[] parts1 =
                 DOT_SPLITTER.splitAsStream(v1).mapToInt(Integer::parseInt).toArray();
         int[] parts2 =
@@ -61,26 +68,5 @@ public final class PluginDependency implements Serializable {
                 .filter(comp -> comp != 0)
                 .findFirst()
                 .orElse(0);
-    }
-
-    @Override
-    public String toString() {
-        return minVersion != null ? name + " (" + minVersion + ")" : name;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (!(object instanceof PluginDependency that)) {
-            return false;
-        }
-        return Objects.equals(name, that.name) && Objects.equals(minVersion, that.minVersion);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, minVersion);
     }
 }

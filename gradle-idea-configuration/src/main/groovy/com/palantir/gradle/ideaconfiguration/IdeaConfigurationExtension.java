@@ -17,31 +17,7 @@
 package com.palantir.gradle.ideaconfiguration;
 
 import org.gradle.api.NamedDomainObjectContainer;
-import org.gradle.api.Project;
 
-public class IdeaConfigurationExtension {
-    private final NamedDomainObjectContainer<PluginDependency> externalDependencies;
-
-    public IdeaConfigurationExtension(Project project) {
-        this.externalDependencies = project.container(PluginDependency.class, PluginDependency::new);
-    }
-
-    final NamedDomainObjectContainer<PluginDependency> dependenciesContainer() {
-        return externalDependencies;
-    }
-
-    public final void externalDependency(String name) {
-        if (externalDependencies.findByName(name) != null) {
-            return;
-        }
-        externalDependencies.create(name);
-    }
-
-    public final void externalDependency(String name, String version) {
-        PluginDependency dependency = externalDependencies.findByName(name);
-        if (dependency == null) {
-            dependency = externalDependencies.create(name);
-        }
-        dependency.updateMinVersion(version);
-    }
+public abstract class IdeaConfigurationExtension {
+    public abstract NamedDomainObjectContainer<PluginDependency> getExternalDependencies();
 }

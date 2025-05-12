@@ -18,7 +18,13 @@ apply plugin: 'com.palantir.idea-configuration'
 
 ```gradle
 ideaConfiguration {
-    externalDependency 'CheckStyle-IDEA'                // plugin-id
-    externalDependency 'palantir-java-format', '2.57.0' // plugin-id, min-version
+    externalDependencies {
+        'CheckStyle-IDEA' {
+            atLeastVersion '9.2.1'
+        }
+        'palantir-java-format' {
+            atLeastVersion '2.57.0'
+        }
+    }
 }
 ```

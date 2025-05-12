@@ -34,7 +34,7 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
         }
 
         IdeaConfigurationExtension extension =
-                project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class, project);
+                project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class);
 
         if (!Boolean.getBoolean("idea.active")) {
             return;
@@ -43,7 +43,7 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
         TaskProvider<UpdateExternalDependenciesXml> updateTask = project.getTasks()
                 .register("updateExternalDepsXml", UpdateExternalDependenciesXml.class, task -> {
                     task.getDependencies()
-                            .set(project.provider(() -> new HashSet<>(extension.dependenciesContainer())));
+                            .set(project.provider(() -> new HashSet<>(extension.getExternalDependencies())));
                 });
 
         // Add the task to the Gradle start parameters so it executes automatically.
