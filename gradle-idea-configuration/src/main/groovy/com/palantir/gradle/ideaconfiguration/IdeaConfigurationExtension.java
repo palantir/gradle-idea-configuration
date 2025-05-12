@@ -20,4 +20,21 @@ import org.gradle.api.NamedDomainObjectContainer;
 
 public abstract class IdeaConfigurationExtension {
     public abstract NamedDomainObjectContainer<PluginDependency> getExternalDependencies();
+
+    @Deprecated(forRemoval = true)
+    public final void externalDependency(String name) {
+        if (getExternalDependencies().findByName(name) != null) {
+            return;
+        }
+        getExternalDependencies().create(name);
+    }
+
+    @Deprecated(forRemoval = true)
+    public final void externalDependency(String name, String version) {
+        PluginDependency dependency = getExternalDependencies().findByName(name);
+        if (dependency == null) {
+            dependency = getExternalDependencies().create(name);
+        }
+        dependency.atLeastVersion(version);
+    }
 }
