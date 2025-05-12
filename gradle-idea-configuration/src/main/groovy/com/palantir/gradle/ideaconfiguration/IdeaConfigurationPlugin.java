@@ -41,8 +41,7 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
 
         TaskProvider<UpdateExternalDependenciesXml> updateTask = project.getTasks()
                 .register("updateExternalDepsXml", UpdateExternalDependenciesXml.class, task -> {
-                    task.getDependencies()
-                            .set(extension.getExternalDependencies());
+                    task.getDependencies().set(extension.getExternalDependencies());
                 });
 
         // Add the task to the Gradle start parameters so it executes automatically.
