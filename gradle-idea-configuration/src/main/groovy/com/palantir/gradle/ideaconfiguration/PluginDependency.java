@@ -24,6 +24,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 
 public abstract class PluginDependency implements Named {
     private static final Pattern DOT_SPLITTER = Pattern.compile("\\.");
@@ -35,6 +36,7 @@ public abstract class PluginDependency implements Named {
     @Override
     public abstract String getName();
 
+    @Optional
     @Input
     public final Provider<String> getMinVersion() {
         return getMinRequiredVersions().map(requiredMinVersions -> requiredMinVersions.stream()

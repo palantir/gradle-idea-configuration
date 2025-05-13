@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: make `getMinVersion` optional
+  links:
+  - https://github.com/palantir/gradle-idea-configuration/pull/21
