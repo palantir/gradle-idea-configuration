@@ -17,7 +17,6 @@
 package com.palantir.gradle.ideaconfiguration;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import org.gradle.StartParameter;
 import org.gradle.api.GradleException;
@@ -34,7 +33,7 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
         }
 
         IdeaConfigurationExtension extension =
-                project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class, project);
+                project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class);
 
         if (!Boolean.getBoolean("idea.active")) {
             return;
@@ -42,8 +41,7 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
 
         TaskProvider<UpdateExternalDependenciesXml> updateTask = project.getTasks()
                 .register("updateExternalDepsXml", UpdateExternalDependenciesXml.class, task -> {
-                    task.getDependencies()
-                            .set(project.provider(() -> new HashSet<>(extension.dependenciesContainer())));
+                    task.getDependencies().set(extension.getExternalDependencies());
                 });
 
         // Add the task to the Gradle start parameters so it executes automatically.

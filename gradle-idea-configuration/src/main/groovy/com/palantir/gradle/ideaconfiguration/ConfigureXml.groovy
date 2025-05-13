@@ -17,27 +17,27 @@
 package com.palantir.gradle.ideaconfiguration
 
 class ConfigureXml {
-    static void configureExternalDependencies(Node rootNode, Set dependencies) {
+    static void configureExternalDependencies(Node rootNode, Set<PluginDependency> dependencies) {
         dependencies.each { dependency ->
-            if (dependency.minVersion()) {
+            if (dependency.minVersion.isPresent()) {
                 configureExternalDependencies(rootNode, dependency)
             } else {
-                configureExternalDependencies(rootNode, dependency.name())
+                configureExternalDependencies(rootNode, dependency.name)
             }
         }
     }
 
     static void configureExternalDependencies(Node rootNode, PluginDependency dependency) {
         def externalDependencies = matchOrCreateChild(rootNode, 'component', [name: 'ExternalDependencies'])
-        def pluginNode = matchChild(externalDependencies, 'plugin', [id: dependency.name()]).orElse(null)
-        def minVersion = dependency.minVersion()
+        def pluginNode = matchChild(externalDependencies, 'plugin', [id: dependency.name]).orElse(null)
+        def minVersion = dependency.minVersion.get()
         if (pluginNode) {
             String existingVersion = pluginNode.'@min-version'
             if (existingVersion && PluginDependency.compareVersions(minVersion, existingVersion) < 0) {
                 minVersion = existingVersion
             }
         }
-        matchOrCreateChild(externalDependencies, 'plugin', [id: dependency.name()], ['min-version' : minVersion])
+        matchOrCreateChild(externalDependencies, 'plugin', [id: dependency.name], ['min-version' : minVersion])
     }
 
     static void configureExternalDependencies(Node rootNode, String dependency) {

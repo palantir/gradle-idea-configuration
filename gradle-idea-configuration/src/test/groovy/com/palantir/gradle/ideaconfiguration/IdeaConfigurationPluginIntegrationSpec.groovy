@@ -46,7 +46,11 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         //language=gradle
         buildFile << """
             ideaConfiguration {
-                externalDependency 'test', '0.1.0'
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    }
+                }
             }
         """.stripIndent(true)
 
@@ -62,7 +66,11 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         //language=gradle
         buildFile << """
             ideaConfiguration {
-                externalDependency 'test', '0.1.0'
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    }
+                }
             }
         """.stripIndent(true)
 
@@ -89,8 +97,14 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         //language=gradle
         buildFile << """
             ideaConfiguration {
-                externalDependency 'test', '0.2.0'
-                externalDependency 'test', '0.1.0'
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.2.0'
+                    } 
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    } 
+                }
             }
         """.stripIndent(true)
 
@@ -117,8 +131,14 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         //language=gradle
         buildFile << """
             ideaConfiguration {
-                externalDependency 'test', '0.1.0.1'
-                externalDependency 'test', '0.1.0'
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0.1'
+                    } 
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    } 
+                }
             }
         """.stripIndent(true)
 
@@ -144,8 +164,12 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
     def "merges with existing externalDependencies.xml"() {
         //language=gradle
         buildFile << """
-            ideaConfiguration {
-                externalDependency 'test', '0.1.0'
+             ideaConfiguration {
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    } 
+                }
             }
         """.stripIndent(true)
 
@@ -185,8 +209,12 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
     def "merges with existing externalDependencies.xml higher value used from external file"() {
         //language=gradle
         buildFile << """
-            ideaConfiguration {
-                externalDependency 'test', '0.1.0'
+             ideaConfiguration {
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    } 
+                }
             }
         """.stripIndent(true)
 
@@ -225,8 +253,12 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
     def "merges with existing externalDependencies.xml higher value used from build file"() {
         //language=gradle
         buildFile << """
-            ideaConfiguration {
-                externalDependency 'test', '0.2.0'
+             ideaConfiguration {
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.2.0'
+                    } 
+                }
             }
         """.stripIndent(true)
 
@@ -265,8 +297,10 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
     def "merges with existing externalDependencies.xml does not override version if no version provided"() {
         //language=gradle
         buildFile << """
-            ideaConfiguration {
-                externalDependency 'test'
+             ideaConfiguration {
+                externalDependencies {
+                    'test'
+                }
             }
         """.stripIndent(true)
 
