@@ -199,8 +199,8 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         def expected = """
           <project version="4">
             <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.1.0"/>
               <plugin id="no-version"/>
+              <plugin id="test" min-version="0.1.0"/>
             </component>
           </project>
         """.stripIndent(true).trim()

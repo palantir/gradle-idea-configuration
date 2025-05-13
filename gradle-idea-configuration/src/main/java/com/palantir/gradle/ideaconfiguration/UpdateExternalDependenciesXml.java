@@ -21,6 +21,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ComponentXml;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.PluginDependencyXml;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ProjectXml;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -46,11 +47,21 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
     @TaskAction
     public final void updateXml() {
         Set<PluginDependency> dependencies = getDependencies().get();
+        File outputFile = getOutputFile().get().getAsFile();
 
+        // If idea-configuration is managing the external dependencies but no dependencies are defined, delete the file
         if (dependencies.isEmpty()) {
-            getLogger().info("No external dependencies to update.");
+            if (!outputFile.exists()) {
+                return;
+            }
+
+            boolean deleted = outputFile.delete();
+            if (!deleted) {
+                throw new RuntimeException("Failed to delete configuration file: " + outputFile);
+            }
             return;
         }
+
         List<PluginDependencyXml> pluginXmls = toXmlDependencies(dependencies);
         ComponentXml component = ComponentXml.of(pluginXmls);
         ProjectXml project = ProjectXml.of(component);
@@ -58,7 +69,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
-            xmlMapper.writeValue(getOutputFile().get().getAsFile(), project);
+            xmlMapper.writeValue(outputFile, project);
         } catch (IOException e) {
             throw new RuntimeException(
                     "Failed to write back to configuration file: "
