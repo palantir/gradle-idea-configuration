@@ -299,7 +299,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         buildFile << """
              ideaConfiguration {
                 externalDependencies {
-                    'test'
+                    'test' {}
                 }
             }
         """.stripIndent(true)
@@ -336,4 +336,32 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         assert externalDepsFile.text.trim() == expected
     }
 
+    def "can add if no minimum version provided"() {
+        //language=gradle
+        buildFile << """
+            ideaConfiguration {
+                externalDependencies {
+                    'test' {}
+                }
+            }
+        """.stripIndent(true)
+
+        when: 'we run the first time'
+        runTasksSuccessfully('-Didea.active=true')
+
+        then: 'we generate the correct config'
+        def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
+        externalDepsFile.exists()
+
+        //language=xml
+        def expected = """
+          <project version="4">
+            <component name="ExternalDependencies">
+              <plugin id="test"/>
+            </component>
+          </project>
+        """.stripIndent(true).trim()
+
+        assert externalDepsFile.text.trim() == expected
+    }
 }
