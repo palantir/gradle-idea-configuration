@@ -30,4 +30,8 @@ public interface ProjectXml {
 
     @JacksonXmlProperty(localName = "component")
     ComponentXml component();
+
+    static ProjectXml of(ComponentXml component) {
+        return ImmutableProjectXml.builder().version("4").component(component).build();
+    }
 }

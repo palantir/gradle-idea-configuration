@@ -22,7 +22,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.List;
 import org.immutables.value.Value;
 
-
 @Value.Immutable
 @JsonDeserialize(as = ImmutableComponentXml.class)
 public interface ComponentXml {
@@ -32,4 +31,11 @@ public interface ComponentXml {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "plugin")
     List<PluginDependencyXml> plugins();
+
+    static ComponentXml of(List<PluginDependencyXml> plugins) {
+        return ImmutableComponentXml.builder()
+                .name("ExternalDependencies")
+                .addAllPlugins(plugins)
+                .build();
+    }
 }

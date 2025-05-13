@@ -161,7 +161,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         assert externalDepsFile.text.trim() == expected
     }
 
-    def "merges with existing externalDependencies.xml"() {
+    def "overwrites existing externalDependencies.xml"() {
         //language=gradle
         buildFile << """
              ideaConfiguration {
@@ -169,6 +169,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
                     'test' {
                         atLeastVersion '0.1.0'
                     } 
+                    'no-version' {}
                 }
             }
         """.stripIndent(true)
@@ -177,6 +178,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         def existing = """
           <project version="4">
             <component name="ExternalDependencies">
+              <plugin id="test" min-version="0.2.0"/>
               <plugin id="existing" min-version="0.2.0"/>
             </component>
           </project>
@@ -197,138 +199,8 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         def expected = """
           <project version="4">
             <component name="ExternalDependencies">
-              <plugin id="existing" min-version="0.2.0"/>
               <plugin id="test" min-version="0.1.0"/>
-            </component>
-          </project>
-        """.stripIndent(true).trim()
-
-        assert externalDepsFile.text.trim() == expected
-    }
-
-    def "merges with existing externalDependencies.xml higher value used from external file"() {
-        //language=gradle
-        buildFile << """
-             ideaConfiguration {
-                externalDependencies {
-                    'test' {
-                        atLeastVersion '0.1.0'
-                    } 
-                }
-            }
-        """.stripIndent(true)
-
-        //language=xml
-        def existing = """
-          <project version="4">
-            <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.2.0"/>
-            </component>
-          </project>
-        """.stripIndent(true).trim()
-
-        def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
-        externalDepsFile.parentFile.mkdirs()
-        externalDepsFile.text = existing
-
-        when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
-
-        then: 'we generate the correct config'
-        def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
-        newExternalDepsFile.exists()
-
-        //language=xml
-        def expected = """
-          <project version="4">
-            <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.2.0"/>
-            </component>
-          </project>
-        """.stripIndent(true).trim()
-
-        assert externalDepsFile.text.trim() == expected
-    }
-
-    def "merges with existing externalDependencies.xml higher value used from build file"() {
-        //language=gradle
-        buildFile << """
-             ideaConfiguration {
-                externalDependencies {
-                    'test' {
-                        atLeastVersion '0.2.0'
-                    } 
-                }
-            }
-        """.stripIndent(true)
-
-        //language=xml
-        def existing = """
-          <project version="4">
-            <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.1.0"/>
-            </component>
-          </project>
-        """.stripIndent(true).trim()
-
-        def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
-        externalDepsFile.parentFile.mkdirs()
-        externalDepsFile.text = existing
-
-        when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
-
-        then: 'we generate the correct config'
-        def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
-        newExternalDepsFile.exists()
-
-        //language=xml
-        def expected = """
-          <project version="4">
-            <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.2.0"/>
-            </component>
-          </project>
-        """.stripIndent(true).trim()
-
-        assert externalDepsFile.text.trim() == expected
-    }
-
-    def "merges with existing externalDependencies.xml does not override version if no version provided"() {
-        //language=gradle
-        buildFile << """
-             ideaConfiguration {
-                externalDependencies {
-                    'test' {}
-                }
-            }
-        """.stripIndent(true)
-
-        //language=xml
-        def existing = """
-          <project version="4">
-            <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.1.0"/>
-            </component>
-          </project>
-        """.stripIndent(true).trim()
-
-        def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
-        externalDepsFile.parentFile.mkdirs()
-        externalDepsFile.text = existing
-
-        when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
-
-        then: 'we generate the correct config'
-        def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
-        newExternalDepsFile.exists()
-
-        //language=xml
-        def expected = """
-          <project version="4">
-            <component name="ExternalDependencies">
-              <plugin id="test" min-version="0.1.0"/>
+              <plugin id="no-version"/>
             </component>
           </project>
         """.stripIndent(true).trim()

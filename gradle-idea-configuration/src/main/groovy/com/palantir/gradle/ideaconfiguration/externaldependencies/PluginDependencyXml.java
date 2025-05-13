@@ -18,16 +18,24 @@ package com.palantir.gradle.ideaconfiguration.externaldependencies;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.palantir.gradle.ideaconfiguration.PluginDependency;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@JsonDeserialize(as = ImmutablePluginDependency.class)
-public interface PluginDependency {
+@JsonDeserialize(as = ImmutablePluginDependencyXml.class)
+public interface PluginDependencyXml {
     @JacksonXmlProperty(isAttribute = true, localName = "id")
     String id();
 
     @Nullable
     @JacksonXmlProperty(isAttribute = true, localName = "min-version")
     String minVersion();
+
+    static PluginDependencyXml from(PluginDependency dep) {
+        return ImmutablePluginDependencyXml.builder()
+                .id(dep.getName())
+                .minVersion(dep.getMinVersion().getOrNull())
+                .build();
+    }
 }

@@ -16,7 +16,15 @@
 
 package com.palantir.gradle.ideaconfiguration;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.palantir.gradle.ideaconfiguration.externaldependencies.ComponentXml;
+import com.palantir.gradle.ideaconfiguration.externaldependencies.PluginDependencyXml;
+import com.palantir.gradle.ideaconfiguration.externaldependencies.ProjectXml;
+import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.SetProperty;
@@ -43,9 +51,23 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
             getLogger().info("No external dependencies to update.");
             return;
         }
+        List<PluginDependencyXml> pluginXmls = toXmlDependencies(dependencies);
+        ComponentXml component = ComponentXml.of(pluginXmls);
+        ProjectXml project = ProjectXml.of(component);
 
-        XmlUtils.createOrUpdateIdeaXmlFile(
-                getProject().file(".idea/externalDependencies.xml"),
-                node -> ConfigureXml.configureExternalDependencies(node, dependencies));
+        XmlMapper xmlMapper = new XmlMapper();
+        xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            xmlMapper.writeValue(getOutputFile().get().getAsFile(), project);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Failed to write back to configuration file: "
+                            + getOutputFile().get(),
+                    e);
+        }
+    }
+
+    private static List<PluginDependencyXml> toXmlDependencies(Set<PluginDependency> deps) {
+        return deps.stream().map(PluginDependencyXml::from).collect(Collectors.toList());
     }
 }
