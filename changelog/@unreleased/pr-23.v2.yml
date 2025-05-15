@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Use java for xml writing
+  links:
+  - https://github.com/palantir/gradle-idea-configuration/pull/23
