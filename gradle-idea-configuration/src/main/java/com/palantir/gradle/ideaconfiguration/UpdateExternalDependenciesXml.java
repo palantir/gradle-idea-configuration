@@ -23,6 +23,7 @@ import com.palantir.gradle.ideaconfiguration.externaldependencies.PluginDependen
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ProjectXml;
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,25 +50,69 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         Set<PluginDependency> dependencies = getDependencies().get();
         File outputFile = getOutputFile().get().getAsFile();
 
-        // If idea-configuration is managing the external dependencies but no dependencies are defined, delete the file
         if (dependencies.isEmpty()) {
-            if (!outputFile.exists()) {
-                return;
-            }
-
-            boolean deleted = outputFile.delete();
-            if (!deleted) {
-                throw new RuntimeException("Failed to delete configuration file: " + outputFile);
-            }
             return;
         }
 
-        List<PluginDependencyXml> pluginXmls = toXmlDependencies(dependencies);
-        ComponentXml component = ComponentXml.of(pluginXmls);
-        ProjectXml project = ProjectXml.of(component);
-
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        List<PluginDependencyXml> existingPluginXmls = readExistingPluginXmls(xmlMapper, outputFile);
+        List<PluginDependencyXml> newPluginXmls = toXmlDependencies(dependencies);
+        List<PluginDependencyXml> merged = mergePluginXmls(existingPluginXmls, newPluginXmls);
+
+        writeMergedXml(xmlMapper, outputFile, merged);
+    }
+
+    private static List<PluginDependencyXml> readExistingPluginXmls(XmlMapper xmlMapper, File outputFile) {
+        if (!outputFile.exists()) {
+            return List.of();
+        }
+        try {
+            ProjectXml existingProject = xmlMapper.readValue(outputFile, ProjectXml.class);
+            if (existingProject != null && existingProject.component() != null) {
+                return existingProject.component().plugins();
+            }
+        } catch (IOException e) {
+            // Ignore and return empty
+        }
+        return List.of();
+    }
+
+    private static List<PluginDependencyXml> toXmlDependencies(Set<PluginDependency> deps) {
+        return deps.stream().map(PluginDependencyXml::from).collect(Collectors.toList());
+    }
+
+    private static List<PluginDependencyXml> mergePluginXmls(
+            List<PluginDependencyXml> existing, List<PluginDependencyXml> incoming) {
+        return java.util.stream.Stream.concat(existing.stream(), incoming.stream())
+                .collect(Collectors.toMap(
+                        PluginDependencyXml::id, dep -> dep, UpdateExternalDependenciesXml::pickHigherVersion))
+                .values()
+                .stream()
+                .sorted(Comparator.comparing(PluginDependencyXml::id))
+                .collect(Collectors.toList());
+    }
+
+    private static PluginDependencyXml pickHigherVersion(
+            PluginDependencyXml firstDependency, PluginDependencyXml secondDependency) {
+        String firstVersion = firstDependency.minVersion();
+        String secondVersion = secondDependency.minVersion();
+        if (firstVersion == null && secondVersion == null) {
+            return firstDependency;
+        }
+        if (firstVersion == null) {
+            return secondDependency;
+        }
+        if (secondVersion == null) {
+            return firstDependency;
+        }
+        return PluginDependency.compareVersions(firstVersion, secondVersion) >= 0 ? firstDependency : secondDependency;
+    }
+
+    private void writeMergedXml(XmlMapper xmlMapper, File outputFile, List<PluginDependencyXml> merged) {
+        ComponentXml component = ComponentXml.of(merged);
+        ProjectXml project = ProjectXml.of(component);
         try {
             xmlMapper.writeValue(outputFile, project);
         } catch (IOException e) {
@@ -76,9 +121,5 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
                             + getOutputFile().get(),
                     e);
         }
-    }
-
-    private static List<PluginDependencyXml> toXmlDependencies(Set<PluginDependency> deps) {
-        return deps.stream().map(PluginDependencyXml::from).collect(Collectors.toList());
     }
 }
