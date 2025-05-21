@@ -312,14 +312,18 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
             </component>
           </project>
         """.stripIndent(true).trim()
+
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
         externalDepsFile.parentFile.mkdirs()
         externalDepsFile.text = existing
+
         when: 'we run the first time'
         runTasksSuccessfully('-Didea.active=true')
+
         then: 'we generate the correct config'
         def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
         newExternalDepsFile.exists()
+
         //language=xml
         def expected = """
           <project version="4">
@@ -328,6 +332,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
             </component>
           </project>
         """.stripIndent(true).trim()
+
         assert externalDepsFile.text.trim() == expected
     }
 
@@ -340,8 +345,10 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
                 }
             }
         """.stripIndent(true)
+
         when: 'we run the first time'
         runTasksSuccessfully('-Didea.active=true')
+
         then: 'we generate the correct config'
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
         externalDepsFile.exists()
@@ -354,6 +361,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
             </component>
           </project>
         """.stripIndent(true).trim()
+
         assert externalDepsFile.text.trim() == expected
     }
 }
