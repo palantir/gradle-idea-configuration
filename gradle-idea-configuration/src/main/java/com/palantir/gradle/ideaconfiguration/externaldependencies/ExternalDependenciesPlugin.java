@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@JsonDeserialize(as = ImmutablePluginDependencyXml.class)
-public interface PluginDependencyXml {
+@JsonDeserialize(as = ImmutableExternalDependenciesPlugin.class)
+public interface ExternalDependenciesPlugin {
     @JacksonXmlProperty(isAttribute = true, localName = "id")
     String id();
 
@@ -32,8 +32,8 @@ public interface PluginDependencyXml {
     @JacksonXmlProperty(isAttribute = true, localName = "min-version")
     String minVersion();
 
-    static PluginDependencyXml from(PluginDependency dep) {
-        return ImmutablePluginDependencyXml.builder()
+    static ExternalDependenciesPlugin from(PluginDependency dep) {
+        return ImmutableExternalDependenciesPlugin.builder()
                 .id(dep.getName())
                 .minVersion(dep.getMinVersion().getOrNull())
                 .build();

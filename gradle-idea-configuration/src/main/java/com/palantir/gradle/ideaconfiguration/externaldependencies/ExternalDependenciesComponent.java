@@ -17,21 +17,25 @@
 package com.palantir.gradle.ideaconfiguration.externaldependencies;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.List;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@JacksonXmlRootElement(localName = "project")
-@JsonDeserialize(as = ImmutableProjectXml.class)
-public interface ProjectXml {
-    @JacksonXmlProperty(isAttribute = true, localName = "version")
-    String version();
+@JsonDeserialize(as = ImmutableExternalDependenciesComponent.class)
+public interface ExternalDependenciesComponent {
+    @JacksonXmlProperty(isAttribute = true, localName = "name")
+    String name();
 
-    @JacksonXmlProperty(localName = "component")
-    ComponentXml component();
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "plugin")
+    List<ExternalDependenciesPlugin> plugins();
 
-    static ProjectXml of(ComponentXml component) {
-        return ImmutableProjectXml.builder().version("4").component(component).build();
+    static ExternalDependenciesComponent of(List<ExternalDependenciesPlugin> plugins) {
+        return ImmutableExternalDependenciesComponent.builder()
+                .name("ExternalDependencies")
+                .addAllPlugins(plugins)
+                .build();
     }
 }
