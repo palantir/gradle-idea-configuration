@@ -27,6 +27,7 @@ import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDepend
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesProject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -65,45 +66,55 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         File outputFile = getOutputFile().get().getAsFile();
 
         if (dependencies.isEmpty()) {
+            log.info("No external dependencies found. Skipping update.");
             return;
         }
 
-        List<ExternalDependenciesPlugin> existingPluginXmls = readExistingPluginXmls(outputFile);
-        List<ExternalDependenciesPlugin> newPluginXmls = toXmlDependencies(dependencies);
-        List<ExternalDependenciesPlugin> merged = mergePluginXmls(existingPluginXmls, newPluginXmls);
+        Optional<ExternalDependenciesProject> existingXml = readXml(outputFile);
+        List<ExternalDependenciesPlugin> addedPlugins = toExternalDependenciesPlugins(dependencies);
+        ExternalDependenciesProject updatedXml = mergePluginsIntoProject(existingXml, addedPlugins);
 
-        writeMergedXml(outputFile, merged);
+        writeXml(outputFile, updatedXml);
     }
 
-    private static List<ExternalDependenciesPlugin> readExistingPluginXmls(File outputFile) {
+    private static Optional<ExternalDependenciesProject> readXml(File outputFile) {
         if (!outputFile.exists()) {
-            return List.of();
+            return Optional.empty();
         }
         try {
-            ExternalDependenciesProject existingProject =
-                    XML_MAPPER.readValue(outputFile, ExternalDependenciesProject.class);
-            if (existingProject != null && existingProject.component() != null) {
-                return existingProject.component().plugins();
-            }
+            return Optional.ofNullable(XML_MAPPER.readValue(outputFile, ExternalDependenciesProject.class));
         } catch (IOException e) {
             log.error("Failed to parse existing configuration file: {}", outputFile, e);
         }
-        return List.of();
+        return Optional.empty();
     }
 
-    private static List<ExternalDependenciesPlugin> toXmlDependencies(Set<PluginDependency> deps) {
-        return deps.stream().map(ExternalDependenciesPlugin::from).collect(Collectors.toList());
-    }
+    private static ExternalDependenciesProject mergePluginsIntoProject(
+            Optional<ExternalDependenciesProject> externalDependenciesProject,
+            List<ExternalDependenciesPlugin> externalDependenciesPlugins) {
 
-    private static List<ExternalDependenciesPlugin> mergePluginXmls(
-            List<ExternalDependenciesPlugin> existing, List<ExternalDependenciesPlugin> incoming) {
-        return Stream.concat(existing.stream(), incoming.stream())
+        List<ExternalDependenciesPlugin> mergedPlugins = Stream.concat(
+                        externalDependenciesProject
+                                .map(ExternalDependenciesProject::component)
+                                .map(ExternalDependenciesComponent::plugins)
+                                .orElseGet(Collections::emptyList)
+                                .stream(),
+                        externalDependenciesPlugins.stream())
                 .collect(Collectors.toMap(
                         ExternalDependenciesPlugin::id, dep -> dep, UpdateExternalDependenciesXml::pickHigherVersion))
                 .values()
                 .stream()
                 .sorted(Comparator.comparing(ExternalDependenciesPlugin::id))
                 .collect(Collectors.toList());
+
+        String version = externalDependenciesProject
+                .map(ExternalDependenciesProject::version)
+                .orElse("4");
+        return ExternalDependenciesProject.of(ExternalDependenciesComponent.of(mergedPlugins), version);
+    }
+
+    private static List<ExternalDependenciesPlugin> toExternalDependenciesPlugins(Set<PluginDependency> deps) {
+        return deps.stream().map(ExternalDependenciesPlugin::from).collect(Collectors.toList());
     }
 
     private static ExternalDependenciesPlugin pickHigherVersion(
@@ -121,11 +132,9 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         return dep2;
     }
 
-    private void writeMergedXml(File outputFile, List<ExternalDependenciesPlugin> merged) {
-        ExternalDependenciesComponent component = ExternalDependenciesComponent.of(merged);
-        ExternalDependenciesProject project = ExternalDependenciesProject.of(component);
+    private void writeXml(File outputFile, ExternalDependenciesProject updatedXml) {
         try {
-            XML_MAPPER.writeValue(outputFile, project);
+            XML_MAPPER.writeValue(outputFile, updatedXml);
         } catch (IOException e) {
             throw new RuntimeException(
                     "Failed to write back to configuration file: "

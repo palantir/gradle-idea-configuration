@@ -31,9 +31,9 @@ public interface ExternalDependenciesProject {
     @JacksonXmlProperty(localName = "component")
     ExternalDependenciesComponent component();
 
-    static ExternalDependenciesProject of(ExternalDependenciesComponent component) {
+    static ExternalDependenciesProject of(ExternalDependenciesComponent component, String version) {
         return ImmutableExternalDependenciesProject.builder()
-                .version("4")
+                .version(version)
                 .component(component)
                 .build();
     }
