@@ -21,6 +21,7 @@ import com.ctc.wstx.stax.WstxOutputFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesComponent;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesPlugin;
@@ -48,6 +49,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
 
     private static final ObjectMapper XML_MAPPER = new XmlMapper(new WstxInputFactory(), new WstxOutputFactory())
             .registerModule(new Jdk8Module())
+            .registerModule(new GuavaModule())
             .enable(SerializationFeature.INDENT_OUTPUT);
 
     @Nested
