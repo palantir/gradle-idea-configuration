@@ -21,6 +21,7 @@ import com.ctc.wstx.stax.WstxOutputFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesComponent;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesPlugin;
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesProject;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,10 +39,15 @@ import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class UpdateExternalDependenciesXml extends DefaultTask {
-    private static final ObjectMapper XML_MAPPER =
-            new XmlMapper(new WstxInputFactory(), new WstxOutputFactory()).enable(SerializationFeature.INDENT_OUTPUT);
+    private static final Logger log = LoggerFactory.getLogger(UpdateExternalDependenciesXml.class);
+
+    private static final ObjectMapper XML_MAPPER = new XmlMapper(new WstxInputFactory(), new WstxOutputFactory())
+            .registerModule(new Jdk8Module())
+            .enable(SerializationFeature.INDENT_OUTPUT);
 
     @Nested
     public abstract SetProperty<PluginDependency> getDependencies();
@@ -79,7 +86,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
                 return existingProject.component().plugins();
             }
         } catch (IOException e) {
-            // Ignore and return empty
+            log.error("Failed to parse existing configuration file: {}", outputFile, e);
         }
         return List.of();
     }
@@ -100,19 +107,18 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
     }
 
     private static ExternalDependenciesPlugin pickHigherVersion(
-            ExternalDependenciesPlugin firstDependency, ExternalDependenciesPlugin secondDependency) {
-        String firstVersion = firstDependency.minVersion();
-        String secondVersion = secondDependency.minVersion();
-        if (firstVersion == null && secondVersion == null) {
-            return firstDependency;
+            ExternalDependenciesPlugin dep1, ExternalDependenciesPlugin dep2) {
+
+        Optional<String> v1 = dep1.minVersion();
+        Optional<String> v2 = dep2.minVersion();
+
+        if (v1.isPresent() && v2.isPresent()) {
+            return PluginDependency.compareVersions(v1.get(), v2.get()) >= 0 ? dep1 : dep2;
         }
-        if (firstVersion == null) {
-            return secondDependency;
+        if (v1.isPresent()) {
+            return dep1;
         }
-        if (secondVersion == null) {
-            return firstDependency;
-        }
-        return PluginDependency.compareVersions(firstVersion, secondVersion) >= 0 ? firstDependency : secondDependency;
+        return dep2;
     }
 
     private void writeMergedXml(File outputFile, List<ExternalDependenciesPlugin> merged) {
