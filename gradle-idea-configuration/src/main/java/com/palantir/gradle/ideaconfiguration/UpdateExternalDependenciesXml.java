@@ -72,7 +72,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
 
         Optional<ExternalDependenciesProject> existingXml = readXml(outputFile);
         List<ExternalDependenciesPlugin> addedPlugins = toExternalDependenciesPlugins(dependencies);
-        ExternalDependenciesProject updatedXml = mergePluginsIntoProject(existingXml, addedPlugins);
+        ExternalDependenciesProject updatedXml = mergePluginsIntoXml(existingXml, addedPlugins);
 
         writeXml(outputFile, updatedXml);
     }
@@ -89,7 +89,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         return Optional.empty();
     }
 
-    private static ExternalDependenciesProject mergePluginsIntoProject(
+    private static ExternalDependenciesProject mergePluginsIntoXml(
             Optional<ExternalDependenciesProject> externalDependenciesProject,
             List<ExternalDependenciesPlugin> externalDependenciesPlugins) {
 
