@@ -4,4 +4,4 @@ org.junit.jupiter:* = 5.12.2
 org.junit.vintage:* = 5.12.2
 org.junit.platform:* = 1.12.2
 org.immutables:value = 2.10.1
-com.fasterxml.jackson.*:jackson-* = 2.19.0
+com.fasterxml.jackson.*:jackson-* = 2.18.0
