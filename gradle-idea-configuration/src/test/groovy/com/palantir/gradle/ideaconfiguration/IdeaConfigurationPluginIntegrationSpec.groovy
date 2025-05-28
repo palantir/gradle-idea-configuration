@@ -206,6 +206,48 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         assert externalDepsFile.text.trim() == expected
     }
 
+    def "keeps existing project version"() {
+        //language=gradle
+        buildFile << """
+             ideaConfiguration {
+                externalDependencies {
+                    'test' {
+                        atLeastVersion '0.1.0'
+                    } 
+                }
+            }
+        """.stripIndent(true)
+
+        //language=xml
+        def existing = """
+          <project version="3">
+            <component name="ExternalDependencies"></component>
+          </project>
+        """.stripIndent(true).trim()
+
+        def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
+        externalDepsFile.parentFile.mkdirs()
+        externalDepsFile.text = existing
+
+        when: 'we run the first time'
+        runTasksSuccessfully('-Didea.active=true')
+
+        then: 'we generate the correct config'
+        def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
+        newExternalDepsFile.exists()
+
+        //language=xml
+        def expected = """
+          <project version="3">
+            <component name="ExternalDependencies">
+              <plugin id="test" min-version="0.1.0"/>
+            </component>
+          </project>
+        """.stripIndent(true).trim()
+
+        assert externalDepsFile.text.trim() == expected
+    }
+
     def "merges with existing externalDependencies.xml higher value used from external file"() {
         //language=gradle
         buildFile << """

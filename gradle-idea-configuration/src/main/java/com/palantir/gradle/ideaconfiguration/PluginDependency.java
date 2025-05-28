@@ -52,7 +52,7 @@ public abstract class PluginDependency implements Named {
         getMinRequiredVersions().add(candidateVersion);
     }
 
-    private static int compareVersions(String v1, String v2) {
+    public static int compareVersions(String v1, String v2) {
         int[] parts1 =
                 DOT_SPLITTER.splitAsStream(v1).mapToInt(Integer::parseInt).toArray();
         int[] parts2 =
