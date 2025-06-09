@@ -70,7 +70,8 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
     protected abstract ProviderFactory getProviderFactory();
 
     public UpdateExternalDependenciesXml() {
-        Provider<RegularFile> fileProvider = getProviderFactory().provider(() -> getProjectLayout().getProjectDirectory().file(".idea/externalDependencies.xml"));
+        Provider<RegularFile> fileProvider = getProviderFactory()
+                .provider(() -> getProjectLayout().getProjectDirectory().file(".idea/externalDependencies.xml"));
         getOutputFile().set(fileProvider);
     }
 
