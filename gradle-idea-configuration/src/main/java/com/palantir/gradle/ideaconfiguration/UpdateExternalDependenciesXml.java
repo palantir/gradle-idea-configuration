@@ -38,9 +38,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ProjectLayout;
-import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Nested;
@@ -70,9 +68,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
     protected abstract ProviderFactory getProviderFactory();
 
     public UpdateExternalDependenciesXml() {
-        Provider<RegularFile> fileProvider = getProviderFactory()
-                .provider(() -> getProjectLayout().getProjectDirectory().file(".idea/externalDependencies.xml"));
-        getOutputFile().set(fileProvider);
+        getOutputFile().set(getProjectLayout().getProjectDirectory().file(".idea/externalDependencies.xml"));
     }
 
     @TaskAction
