@@ -39,7 +39,6 @@ import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
@@ -63,9 +62,6 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
 
     @Inject
     protected abstract ProjectLayout getProjectLayout();
-
-    @Inject
-    protected abstract ProviderFactory getProviderFactory();
 
     public UpdateExternalDependenciesXml() {
         getOutputFile().set(getProjectLayout().getProjectDirectory().file(".idea/externalDependencies.xml"));
