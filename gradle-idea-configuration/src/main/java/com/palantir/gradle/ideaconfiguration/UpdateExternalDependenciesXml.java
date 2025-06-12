@@ -134,7 +134,6 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         return dep2;
     }
 
-    @SuppressWarnings("for-rollout:ThrowSpecificExceptions")
     private void writeXml(File outputFile, ExternalDependenciesProject updatedXml) {
         try {
             XML_MAPPER.writeValue(outputFile, updatedXml);
