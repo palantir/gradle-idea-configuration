@@ -35,7 +35,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Nested;
@@ -58,8 +60,11 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
     @OutputFile
     public abstract RegularFileProperty getOutputFile();
 
+    @Inject
+    protected abstract ProjectLayout getProjectLayout();
+
     public UpdateExternalDependenciesXml() {
-        getOutputFile().set(getProject().file(".idea/externalDependencies.xml"));
+        getOutputFile().set(getProjectLayout().getProjectDirectory().file(".idea/externalDependencies.xml"));
     }
 
     @TaskAction
