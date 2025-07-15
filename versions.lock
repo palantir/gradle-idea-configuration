@@ -12,7 +12,7 @@ com.google.guava:guava:33.4.8-jre (2 constraints: e22fc0d9)
 com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 constraints: bd17c918)
 com.google.j2objc:j2objc-annotations:3.0.0 (1 constraints: 150aeab4)
 org.codehaus.woodstox:stax2-api:4.2.2 (2 constraints: 6a278bd2)
-org.immutables:value:2.11.0 (1 constraints: 3605323b)
+org.immutables:value:2.11.1 (1 constraints: 3705333b)
 org.jspecify:jspecify:1.0.0 (1 constraints: 130ae0b4)
 
 [Test dependencies]
