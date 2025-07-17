@@ -28,6 +28,7 @@ import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDepend
 import com.palantir.gradle.ideaconfiguration.externaldependencies.ExternalDependenciesProject;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -143,7 +144,7 @@ public abstract class UpdateExternalDependenciesXml extends DefaultTask {
         try {
             XML_MAPPER.writeValue(outputFile, updatedXml);
         } catch (IOException e) {
-            throw new RuntimeException(
+            throw new UncheckedIOException(
                     "Failed to write back to configuration file: "
                             + getOutputFile().get(),
                     e);
