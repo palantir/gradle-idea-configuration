@@ -16,9 +16,9 @@
 
 package com.palantir.gradle.ideaconfiguration
 
-import nebula.test.IntegrationTestKitSpec
+import com.palantir.gradle.plugintesting.ConfigurationCacheSpec
 
-class ConfigurationCacheTest extends IntegrationTestKitSpec {
+class ConfigurationCacheTest extends ConfigurationCacheSpec {
 
     def setup() {
         definePluginOutsideOfPluginBlock = true
@@ -27,7 +27,7 @@ class ConfigurationCacheTest extends IntegrationTestKitSpec {
 
     def "classes task runs with configuration cache when applying IdeaConfigurationPlugin"() {
         given:
-        setupBuildWithGitVersion("""
+        buildFile << """
             apply plugin: 'com.palantir.idea-configuration'
             apply plugin: 'java-library'
 
@@ -35,15 +35,15 @@ class ConfigurationCacheTest extends IntegrationTestKitSpec {
                 mavenCentral()
                 mavenLocal()
             }
-        """)
+        """.stripIndent(true)
 
         expect:
-        runTasksWithConfigurationCache('classes')
+        runTasksWithConfigurationCacheAndCheck('classes', '-Didea.active=true')
     }
 
     def "updateExternalDepsXml task runs with configuration cache"() {
         given:
-        setupBuildWithGitVersion("""
+        buildFile << """
             apply plugin: 'com.palantir.idea-configuration'
             apply plugin: 'java-library'
 
@@ -51,35 +51,9 @@ class ConfigurationCacheTest extends IntegrationTestKitSpec {
                 mavenCentral()
                 mavenLocal()
             }
-        """)
+        """.stripIndent(true)
 
         expect:
-        runTasksWithConfigurationCache('updateExternalDepsXml')
-    }
-
-    /**
-     * Sets up the build.gradle file with the given content.
-     */
-    private void setupBuildWithGitVersion(String buildFileContent) {
-        // language=Gradle
-        buildFile << buildFileContent.stripIndent(true)
-    }
-
-    /**
-     * Runs the specified tasks twice with configuration cache and verifies cache behavior.
-     * Returns true if the configuration cache was properly used on the second run.
-     */
-    private boolean runTasksWithConfigurationCache(String... tasks) {
-
-        // NOTE: Set idea.active=true system prop, so IdeaConfigurationPlugin does not exit early
-        def firstRun = createRunner(tasks + ['--configuration-cache', '-Didea.active=true'] as String[]).build()
-        assert firstRun.output.contains('Configuration cache entry stored.'),
-                "Expected first run to store configuration cache, but output was: ${firstRun.output}"
-
-        def secondRun = createRunner(tasks + ['--configuration-cache', '-Didea.active=true'] as String[]).build()
-        assert secondRun.output.contains('Configuration cache entry reused.'),
-                "Expected second run to reuse configuration cache, but output was: ${secondRun.output}"
-
-        return true
+        runTasksWithConfigurationCacheAndCheck('updateExternalDepsXml', '-Didea.active=true')
     }
 }
