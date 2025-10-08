@@ -4,4 +4,4 @@ junit:junit = 4.13.2
 org.junit.jupiter:* = 6.0.0
 org.junit.vintage:* = 6.0.0
 org.junit.platform:* = 6.0.0
-org.immutables:value = 2.11.4
+org.immutables:value = 2.11.5
