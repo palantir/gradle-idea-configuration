@@ -26,7 +26,7 @@ com.google.j2objc:j2objc-annotations:3.0.0 (1 constraints: 150aeab4)
 
 org.codehaus.woodstox:stax2-api:4.2.2 (2 constraints: 6a278bd2)
 
-org.immutables:value:2.11.4 (1 constraints: 3a05363b)
+org.immutables:value:2.11.5 (1 constraints: 3b05373b)
 
 org.jspecify:jspecify:1.0.0 (8 constraints: c9803ac0)
 
