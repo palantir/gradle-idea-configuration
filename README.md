@@ -28,3 +28,26 @@ ideaConfiguration {
     }
 }
 ```
+
+### Language Injections
+
+Configure IntelliJ language injections for your code. This is useful when you have methods that accept string parameters containing code in other languages (SQL, HTML, RegExp, etc.).
+
+```gradle
+ideaConfiguration {
+    languageInjections {
+        'sql-executor' {
+            language = 'SQL'
+            displayName = 'SqlExecutor.execute (com.example)'
+            pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+        }
+        'html-renderer' {
+            language = 'HTML'
+            displayName = 'HtmlRenderer.render (com.example)'
+            pattern = 'psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))'
+        }
+    }
+}
+```
+
+The plugin will automatically update `.idea/IntelliLang.xml` with your configured injections.

@@ -21,6 +21,8 @@ import org.gradle.api.NamedDomainObjectContainer;
 public abstract class IdeaConfigurationExtension {
     public abstract NamedDomainObjectContainer<PluginDependency> getExternalDependencies();
 
+    public abstract NamedDomainObjectContainer<LanguageInjection> getLanguageInjections();
+
     @SuppressWarnings("for-rollout:ConfigurationAvoidanceRegistration")
     @Deprecated(forRemoval = true)
     public final void externalDependency(String name) {
