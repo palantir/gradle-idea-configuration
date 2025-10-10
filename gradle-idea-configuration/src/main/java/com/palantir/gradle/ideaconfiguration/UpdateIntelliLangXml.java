@@ -25,12 +25,16 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.palantir.gradle.ideaconfiguration.intellilang.IntelliLangComponent;
 import com.palantir.gradle.ideaconfiguration.intellilang.IntelliLangInjection;
+import com.palantir.gradle.ideaconfiguration.intellilang.IntelliLangPlace;
 import com.palantir.gradle.ideaconfiguration.intellilang.IntelliLangProject;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -103,24 +107,90 @@ public abstract class UpdateIntelliLangXml extends DefaultTask {
         List<IntelliLangInjection> existingInjections =
                 existingProject.component().injections();
 
-        List<IntelliLangInjection> mergedInjections = Stream.concat(existingInjections.stream(), newInjections.stream())
+        // Use composite key: (displayName, language, injectorId)
+        Map<InjectionKey, IntelliLangInjection> mergedMap = Stream.concat(
+                        existingInjections.stream(), newInjections.stream())
                 .collect(Collectors.toMap(
-                        // Use display name as the unique key
-                        IntelliLangInjection::displayName,
+                        InjectionKey::from,
                         injection -> injection,
-                        // If duplicate, keep the new one
-                        (_existing, replacement) -> replacement))
-                .values()
-                .stream()
-                .sorted(Comparator.comparing(IntelliLangInjection::displayName))
+                        // If duplicate key, merge the places from both injections
+                        UpdateIntelliLangXml::mergeInjections,
+                        LinkedHashMap::new));
+
+        List<IntelliLangInjection> mergedInjections = mergedMap.values().stream()
+                .sorted(Comparator.comparing(IntelliLangInjection::displayName)
+                        .thenComparing(IntelliLangInjection::language)
+                        .thenComparing(IntelliLangInjection::injectorId))
                 .collect(Collectors.toList());
 
         return IntelliLangProject.of(IntelliLangComponent.of(mergedInjections), existingProject.version());
     }
 
+    private static IntelliLangInjection mergeInjections(
+            IntelliLangInjection existing, IntelliLangInjection replacement) {
+        // Combine places from both injections and remove duplicates
+        List<String> mergedPlaces = Stream.concat(existing.places().stream(), replacement.places().stream())
+                .map(IntelliLangPlace::pattern)
+                .distinct()
+                .sorted()
+                .toList();
+
+        return IntelliLangInjection.builder()
+                .from(existing)
+                .places(mergedPlaces.stream().map(IntelliLangPlace::of).collect(Collectors.toList()))
+                .build();
+    }
+
+    /**
+     * Composite key for uniquely identifying an injection by display name, language, and injector ID.
+     */
+    private static final class InjectionKey {
+        private final String displayName;
+        private final String language;
+        private final String injectorId;
+
+        private InjectionKey(String displayName, String language, String injectorId) {
+            this.displayName = displayName;
+            this.language = language;
+            this.injectorId = injectorId;
+        }
+
+        static InjectionKey from(IntelliLangInjection injection) {
+            return new InjectionKey(injection.displayName(), injection.language(), injection.injectorId());
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof InjectionKey other)) {
+                return false;
+            }
+            return Objects.equals(displayName, other.displayName)
+                    && Objects.equals(language, other.language)
+                    && Objects.equals(injectorId, other.injectorId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(displayName, language, injectorId);
+        }
+    }
+
     private static IntelliLangProject createNewProject(List<IntelliLangInjection> injections) {
-        List<IntelliLangInjection> sortedInjections = injections.stream()
-                .sorted(Comparator.comparing(IntelliLangInjection::displayName))
+        // Merge injections with same composite key before creating project
+        Map<InjectionKey, IntelliLangInjection> mergedMap = injections.stream()
+                .collect(Collectors.toMap(
+                        InjectionKey::from,
+                        injection -> injection,
+                        UpdateIntelliLangXml::mergeInjections,
+                        LinkedHashMap::new));
+
+        List<IntelliLangInjection> sortedInjections = mergedMap.values().stream()
+                .sorted(Comparator.comparing(IntelliLangInjection::displayName)
+                        .thenComparing(IntelliLangInjection::language)
+                        .thenComparing(IntelliLangInjection::injectorId))
                 .collect(Collectors.toList());
         return IntelliLangProject.of(IntelliLangComponent.of(sortedInjections), "4");
     }

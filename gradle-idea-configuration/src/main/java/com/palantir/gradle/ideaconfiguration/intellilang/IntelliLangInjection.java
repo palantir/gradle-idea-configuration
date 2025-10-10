@@ -17,8 +17,10 @@
 package com.palantir.gradle.ideaconfiguration.intellilang;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.palantir.gradle.ideaconfiguration.LanguageInjection;
+import java.util.List;
 import org.immutables.value.Value;
 
 /**
@@ -47,7 +49,8 @@ public interface IntelliLangInjection {
     }
 
     @JacksonXmlProperty(localName = "place")
-    IntelliLangPlace place();
+    @JacksonXmlElementWrapper(useWrapping = false)
+    List<IntelliLangPlace> places();
 
     static ImmutableIntelliLangInjection.Builder builder() {
         return ImmutableIntelliLangInjection.builder();
@@ -61,7 +64,7 @@ public interface IntelliLangInjection {
         return builder()
                 .language(injection.getLanguage().get())
                 .displayName(displayName)
-                .place(IntelliLangPlace.of(injection.getPattern().get()))
+                .addPlaces(IntelliLangPlace.of(injection.getPattern().get()))
                 .build();
     }
 }
