@@ -16,6 +16,7 @@
 
 package com.palantir.gradle.ideaconfiguration.intellilang;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -28,6 +29,7 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 @JsonDeserialize(as = ImmutableIntelliLangInjection.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface IntelliLangInjection {
 
     @JacksonXmlProperty(isAttribute = true)

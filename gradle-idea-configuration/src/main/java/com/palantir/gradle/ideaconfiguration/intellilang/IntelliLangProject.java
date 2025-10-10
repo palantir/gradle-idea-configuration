@@ -16,6 +16,7 @@
 
 package com.palantir.gradle.ideaconfiguration.intellilang;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -27,6 +28,7 @@ import org.immutables.value.Value;
 @Value.Immutable
 @JacksonXmlRootElement(localName = "project")
 @JsonDeserialize(as = ImmutableIntelliLangProject.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface IntelliLangProject {
 
     @JacksonXmlProperty(isAttribute = true)
