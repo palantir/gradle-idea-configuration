@@ -27,6 +27,10 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         '''.stripIndent(true)
     }
 
+    private static void assertXmlEquals(String expected, String actual) {
+        assert expected.trim() == actual.trim()
+    }
+
     def 'nothing happens if no language injections defined'() {
         //language=gradle
         buildFile << '''
@@ -64,20 +68,20 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
         intelliLangFile.exists()
 
-        def xml = new XmlSlurper().parse(intelliLangFile)
-        xml.@version == '4'
-        xml.component.@name == 'LanguageInjectionConfiguration'
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="SQL" injector-id="java">
+                  <display-name>SqlExecutor.execute (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))</place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
 
-        def injection = xml.component.injection[0]
-        injection.@language == 'SQL'
-        injection.@'injector-id' == 'java'
-        injection.'display-name'.text() == 'SqlExecutor.execute (com.example)'
-        injection.'single-file'.@value == 'false'
-
-        def pattern = injection.place.text()
-        pattern.contains('psiParameter().ofMethod(0')
-        pattern.contains('.withName("execute")')
-        pattern.contains('.definedInClass("com.example.SqlExecutor")')
+        assertXmlEquals(expected, intelliLangFile.text)
     }
 
     def 'handles multiple language injections'() {
@@ -106,16 +110,25 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
         intelliLangFile.exists()
 
-        def xml = new XmlSlurper().parse(intelliLangFile)
-        xml.component.injection.size() == 2
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="HTML" injector-id="java">
+                  <display-name>HtmlRenderer.render (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))</place>
+                </injection>
+                <injection language="SQL" injector-id="java">
+                  <display-name>SqlExecutor.execute (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))</place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
 
-        def languages = xml.component.injection.@language*.text()
-        languages.contains('SQL')
-        languages.contains('HTML')
-
-        def displayNames = xml.component.injection.'display-name'*.text()
-        displayNames.contains('SqlExecutor.execute (com.example)')
-        displayNames.contains('HtmlRenderer.render (com.example)')
+        assertXmlEquals(expected, intelliLangFile.text)
     }
 
     def 'merges with existing IntelliLang.xml'() {
@@ -139,7 +152,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
               <injection language="RegExp" injector-id="java">
                 <display-name>Existing.pattern (com.example)</display-name>
                 <single-file value="false"/>
-                <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))]]></place>
+                <place>psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))</place>
               </injection>
             </component>
           </project>
@@ -152,31 +165,94 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         when: 'we run the first time'
         runTasksSuccessfully('-Didea.active=true')
 
-        then: 'we generate the correct config'
+        then: 'we generate the correct config with both injections'
         def newIntelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
         newIntelliLangFile.exists()
 
-        def xml = new XmlSlurper().parse(newIntelliLangFile)
-        xml.component.injection.size() == 2
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="RegExp" injector-id="java">
+                  <display-name>Existing.pattern (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))</place>
+                </injection>
+                <injection language="SQL" injector-id="java">
+                  <display-name>SqlExecutor.execute (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))</place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
 
-        def languages = xml.component.injection.@language*.text()
-        languages.contains('SQL')
-        languages.contains('RegExp')
-
-        def displayNames = xml.component.injection.'display-name'*.text()
-        displayNames.contains('SqlExecutor.execute (com.example)')
-        displayNames.contains('Existing.pattern (com.example)')
+        assertXmlEquals(expected, newIntelliLangFile.text)
     }
 
-    def 'replaces injection with same display name'() {
+    def 'merges multiple patterns with same language and display name into single injection'() {
         //language=gradle
         buildFile << '''
             ideaConfiguration {
                 languageInjections {
-                    'sql-executor' {
+                    'sql-query-1' {
                         language = 'SQL'
-                        displayName = 'SqlExecutor.execute (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+                        displayName = 'DatabaseLibrary (com.example.db)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("executeQuery").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))'
+                    }
+                    'sql-query-2' {
+                        language = 'SQL'
+                        displayName = 'DatabaseLibrary (com.example.db)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("executeUpdate").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))'
+                    }
+                    'sql-query-3' {
+                        language = 'SQL'
+                        displayName = 'DatabaseLibrary (com.example.db)'
+                        pattern = 'psiParameter().ofMethod(1, psiMethod().withName("prepareStatement").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))'
+                    }
+                }
+            }
+        '''.stripIndent(true)
+
+        when: 'we run the task'
+        runTasksSuccessfully('-Didea.active=true')
+
+        then: 'all patterns with same language and display name are merged into single injection with multiple place elements'
+        def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
+        intelliLangFile.exists()
+
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="SQL" injector-id="java">
+                  <display-name>DatabaseLibrary (com.example.db)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("executeQuery").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("executeUpdate").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(1, psiMethod().withName("prepareStatement").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))</place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
+
+        assertXmlEquals(expected, intelliLangFile.text)
+    }
+
+    def 'merges new patterns with existing patterns that have same language and display name'() {
+        //language=gradle
+        buildFile << '''
+            ideaConfiguration {
+                languageInjections {
+                    'sql-new-1' {
+                        language = 'SQL'
+                        displayName = 'SqlLibrary (com.example)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("newMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))'
+                    }
+                    'sql-new-2' {
+                        language = 'SQL'
+                        displayName = 'SqlLibrary (com.example)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("newMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))'
                     }
                 }
             }
@@ -186,10 +262,11 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         def existing = '''
           <project version="4">
             <component name="LanguageInjectionConfiguration">
-              <injection language="HTML" injector-id="java">
-                <display-name>SqlExecutor.execute (com.example)</display-name>
+              <injection language="SQL" injector-id="java">
+                <display-name>SqlLibrary (com.example)</display-name>
                 <single-file value="false"/>
-                <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("old").withParameters("java.lang.String").definedInClass("com.example.Old"))]]></place>
+                <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
               </injection>
             </component>
           </project>
@@ -199,115 +276,112 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         intelliLangFile.parentFile.mkdirs()
         intelliLangFile.text = existing
 
-        when: 'we run the first time'
+        when: 'we run the task'
         runTasksSuccessfully('-Didea.active=true')
 
-        then: 'we generate the correct config with new injection replacing old'
+        then: 'new patterns are merged with existing patterns into single injection'
         def newIntelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
         newIntelliLangFile.exists()
 
-        def xml = new XmlSlurper().parse(newIntelliLangFile)
-        xml.component.injection.size() == 1
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="SQL" injector-id="java">
+                  <display-name>SqlLibrary (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("newMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("newMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
 
-        def injection = xml.component.injection[0]
-        injection.@language == 'SQL'
-        injection.'display-name'.text() == 'SqlExecutor.execute (com.example)'
-        injection.place.text().contains('.withName("execute")')
-        !injection.place.text().contains('.withName("old")')
+        assertXmlEquals(expected, newIntelliLangFile.text)
     }
 
-    def 'uses name as display name if displayName not provided'() {
+    def 'complex merge with multiple languages and display names'() {
         //language=gradle
         buildFile << '''
             ideaConfiguration {
                 languageInjections {
-                    'my-sql-injection' {
+                    'xml-case-1' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("processXml").withParameters("java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'xml-case-2' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("queryWithArray").withParameters("java.lang.String", "int[]").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'xml-case-3' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("queryWithList").withParameters("java.lang.String", "java.util.List").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'xml-case-4' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'xml-case-5' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'xml-case-6' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'xml-case-7' {
+                        language = 'XML'
+                        displayName = 'EdgeCaseLibrary (com.example.edgecases)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                    }
+                    'sql-separate' {
                         language = 'SQL'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+                        displayName = 'AnotherLibrary (com.example)'
+                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").definedInClass("com.example.AnotherLibrary"))'
                     }
                 }
             }
         '''.stripIndent(true)
 
-        when: 'we run the first time'
+        when: 'we run the task'
         runTasksSuccessfully('-Didea.active=true')
 
-        then: 'we generate the correct config'
+        then: 'complex patterns are properly merged by language and display name'
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
         intelliLangFile.exists()
 
-        def xml = new XmlSlurper().parse(intelliLangFile)
-        xml.component.injection[0].'display-name'.text() == 'my-sql-injection'
-    }
-
-    def 'keeps existing project version'() {
-        //language=gradle
-        buildFile << '''
-            ideaConfiguration {
-                languageInjections {
-                    'sql-executor' {
-                        language = 'SQL'
-                        displayName = 'SqlExecutor.execute (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
-                    }
-                }
-            }
-        '''.stripIndent(true)
-
         //language=xml
-        def existing = '''
-          <project version="3">
-            <component name="LanguageInjectionConfiguration"></component>
-          </project>
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="SQL" injector-id="java">
+                  <display-name>AnotherLibrary (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").definedInClass("com.example.AnotherLibrary"))</place>
+                </injection>
+                <injection language="XML" injector-id="java">
+                  <display-name>EdgeCaseLibrary (com.example.edgecases)</display-name>
+                  <single-file value="false"/>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("processXml").withParameters("java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("queryWithArray").withParameters("java.lang.String", "int[]").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("queryWithList").withParameters("java.lang.String", "java.util.List").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place>psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                </injection>
+              </component>
+            </project>
         '''.stripIndent(true).trim()
 
-        def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
-        intelliLangFile.parentFile.mkdirs()
-        intelliLangFile.text = existing
-
-        when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
-
-        then: 'we keep the existing version'
-        def newIntelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
-        newIntelliLangFile.exists()
-
-        def xml = new XmlSlurper().parse(newIntelliLangFile)
-        xml.@version == '3'
-    }
-
-    def 'injections are sorted by display name'() {
-        //language=gradle
-        buildFile << '''
-            ideaConfiguration {
-                languageInjections {
-                    'z-last' {
-                        language = 'SQL'
-                        displayName = 'Z Last'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("z").definedInClass("com.example.Z"))'
-                    }
-                    'a-first' {
-                        language = 'HTML'
-                        displayName = 'A First'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("a").definedInClass("com.example.A"))'
-                    }
-                    'm-middle' {
-                        language = 'RegExp'
-                        displayName = 'M Middle'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("m").definedInClass("com.example.M"))'
-                    }
-                }
-            }
-        '''.stripIndent(true)
-
-        when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
-
-        then: 'injections are sorted alphabetically'
-        def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
-        def xml = new XmlSlurper().parse(intelliLangFile)
-
-        def displayNames = xml.component.injection.'display-name'*.text()
-        displayNames == ['A First', 'M Middle', 'Z Last']
+        assertXmlEquals(expected, intelliLangFile.text)
     }
 }
