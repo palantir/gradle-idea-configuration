@@ -75,7 +75,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                 <injection language="SQL" injector-id="java">
                   <display-name>SqlExecutor.execute (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))]]></place>
                 </injection>
               </component>
             </project>
@@ -117,12 +117,12 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                 <injection language="HTML" injector-id="java">
                   <display-name>HtmlRenderer.render (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))]]></place>
                 </injection>
                 <injection language="SQL" injector-id="java">
                   <display-name>SqlExecutor.execute (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))]]></place>
                 </injection>
               </component>
             </project>
@@ -152,7 +152,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
               <injection language="RegExp" injector-id="java">
                 <display-name>Existing.pattern (com.example)</display-name>
                 <single-file value="false"/>
-                <place>psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))</place>
+                <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))]]></place>
               </injection>
             </component>
           </project>
@@ -176,12 +176,12 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                 <injection language="RegExp" injector-id="java">
                   <display-name>Existing.pattern (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("pattern").withParameters("java.lang.String").definedInClass("com.example.Existing"))]]></place>
                 </injection>
                 <injection language="SQL" injector-id="java">
                   <display-name>SqlExecutor.execute (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))]]></place>
                 </injection>
               </component>
             </project>
@@ -228,9 +228,9 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                 <injection language="SQL" injector-id="java">
                   <display-name>DatabaseLibrary (com.example.db)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("executeQuery").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("executeUpdate").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(1, psiMethod().withName("prepareStatement").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("executeQuery").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("executeUpdate").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(1, psiMethod().withName("prepareStatement").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))]]></place>
                 </injection>
               </component>
             </project>
@@ -265,8 +265,8 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
               <injection language="SQL" injector-id="java">
                 <display-name>SqlLibrary (com.example)</display-name>
                 <single-file value="false"/>
-                <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
-                <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("existingMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))]]></place>
+                <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("existingMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))]]></place>
               </injection>
             </component>
           </project>
@@ -290,10 +290,10 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                 <injection language="SQL" injector-id="java">
                   <display-name>SqlLibrary (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("existingMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("newMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("newMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("existingMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("existingMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("newMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("newMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))]]></place>
                 </injection>
               </component>
             </project>
@@ -365,18 +365,18 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                 <injection language="SQL" injector-id="java">
                   <display-name>AnotherLibrary (com.example)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("execute").definedInClass("com.example.AnotherLibrary"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("execute").definedInClass("com.example.AnotherLibrary"))]]></place>
                 </injection>
                 <injection language="XML" injector-id="java">
                   <display-name>EdgeCaseLibrary (com.example.edgecases)</display-name>
                   <single-file value="false"/>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("processXml").withParameters("java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("queryWithArray").withParameters("java.lang.String", "int[]").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("queryWithList").withParameters("java.lang.String", "java.util.List").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
-                  <place>psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))</place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("processXml").withParameters("java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("queryWithArray").withParameters("java.lang.String", "int[]").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("queryWithList").withParameters("java.lang.String", "java.util.List").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
                 </injection>
               </component>
             </project>

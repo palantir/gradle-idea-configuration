@@ -18,6 +18,7 @@ package com.palantir.gradle.ideaconfiguration.intellilang;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlCData;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import org.immutables.value.Value;
 
@@ -30,6 +31,7 @@ import org.immutables.value.Value;
 public interface IntelliLangPlace {
 
     @JacksonXmlText(value = true)
+    @JacksonXmlCData
     String pattern();
 
     static ImmutableIntelliLangPlace.Builder builder() {
