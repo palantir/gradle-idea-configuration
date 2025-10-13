@@ -59,10 +59,14 @@ public interface IntelliLangInjection {
     }
 
     static IntelliLangInjection from(LanguageInjection injection) {
-        return builder()
+        ImmutableIntelliLangInjection.Builder builder = builder()
                 .language(injection.getLanguage().get())
-                .displayName(injection.getDisplayName().get())
-                .addPlaces(IntelliLangPlace.of(injection.getPattern().get()))
-                .build();
+                .displayName(injection.getDisplayName().get());
+
+        injection.getPatterns().get().forEach(pattern -> {
+            builder.addPlaces(IntelliLangPlace.of(pattern));
+        });
+
+        return builder.build();
     }
 }

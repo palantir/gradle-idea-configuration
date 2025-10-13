@@ -55,7 +55,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                     'sql-executor' {
                         language = 'SQL'
                         displayName = 'SqlExecutor.execute (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))']
                     }
                 }
             }
@@ -92,12 +92,12 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                     'sql-executor' {
                         language = 'SQL'
                         displayName = 'SqlExecutor.execute (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))']
                     }
                     'html-renderer' {
                         language = 'HTML'
                         displayName = 'HtmlRenderer.render (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))']
                     }
                 }
             }
@@ -139,7 +139,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                     'sql-executor' {
                         language = 'SQL'
                         displayName = 'SqlExecutor.execute (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))']
                     }
                 }
             }
@@ -198,17 +198,17 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                     'sql-query-1' {
                         language = 'SQL'
                         displayName = 'DatabaseLibrary (com.example.db)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("executeQuery").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("executeQuery").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))']
                     }
                     'sql-query-2' {
                         language = 'SQL'
                         displayName = 'DatabaseLibrary (com.example.db)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("executeUpdate").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("executeUpdate").withParameters("java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))']
                     }
                     'sql-query-3' {
                         language = 'SQL'
                         displayName = 'DatabaseLibrary (com.example.db)'
-                        pattern = 'psiParameter().ofMethod(1, psiMethod().withName("prepareStatement").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(1, psiMethod().withName("prepareStatement").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.db.DatabaseLibrary"))']
                     }
                 }
             }
@@ -247,12 +247,12 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                     'sql-new-1' {
                         language = 'SQL'
                         displayName = 'SqlLibrary (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("newMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("newMethod1").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))']
                     }
                     'sql-new-2' {
                         language = 'SQL'
                         displayName = 'SqlLibrary (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("newMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("newMethod2").withParameters("java.lang.String").definedInClass("com.example.SqlLibrary"))']
                     }
                 }
             }
@@ -310,42 +310,42 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                     'xml-case-1' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("processXml").withParameters("java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("processXml").withParameters("java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'xml-case-2' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("queryWithArray").withParameters("java.lang.String", "int[]").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("queryWithArray").withParameters("java.lang.String", "int[]").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'xml-case-3' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("queryWithList").withParameters("java.lang.String", "java.util.List").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("queryWithList").withParameters("java.lang.String", "java.util.List").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'xml-case-4' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'xml-case-5' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'xml-case-6' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'xml-case-7' {
                         language = 'XML'
                         displayName = 'EdgeCaseLibrary (com.example.edgecases)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))']
                     }
                     'sql-separate' {
                         language = 'SQL'
                         displayName = 'AnotherLibrary (com.example)'
-                        pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").definedInClass("com.example.AnotherLibrary"))'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("execute").definedInClass("com.example.AnotherLibrary"))']
                     }
                 }
             }
@@ -377,6 +377,96 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
                   <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("queryWithPrimitives").withParameters("java.lang.String", "int", "long", "boolean", "double").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
                   <place><![CDATA[psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("int", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
                   <place><![CDATA[psiParameter().ofMethod(1, psiMethod().withName("EdgeCaseLibrary").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.edgecases.EdgeCaseLibrary"))]]></place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
+
+        assertXmlEquals(expected, intelliLangFile.text)
+    }
+
+    def 'single injection with multiple patterns in a list'() {
+        //language=gradle
+        buildFile << '''
+            ideaConfiguration {
+                languageInjections {
+                    'sql-multi' {
+                        language = 'SQL'
+                        displayName = 'MultiPatternLibrary (com.example)'
+                        patterns = [
+                            'psiParameter().ofMethod(0, psiMethod().withName("query").withParameters("java.lang.String").definedInClass("com.example.MultiPatternLibrary"))',
+                            'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.MultiPatternLibrary"))',
+                            'psiParameter().ofMethod(0, psiMethod().withName("update").withParameters("java.lang.String").definedInClass("com.example.MultiPatternLibrary"))'
+                        ]
+                    }
+                }
+            }
+        '''.stripIndent(true)
+
+        when: 'we run the task'
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
+
+        then: 'all patterns from the list are included in a single injection with multiple place elements'
+        def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
+        intelliLangFile.exists()
+
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="SQL" injector-id="java">
+                  <display-name>MultiPatternLibrary (com.example)</display-name>
+                  <single-file value="false"/>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("query").withParameters("java.lang.String").definedInClass("com.example.MultiPatternLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.MultiPatternLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("update").withParameters("java.lang.String").definedInClass("com.example.MultiPatternLibrary"))]]></place>
+                </injection>
+              </component>
+            </project>
+        '''.stripIndent(true).trim()
+
+        assertXmlEquals(expected, intelliLangFile.text)
+    }
+
+    def 'combines patterns from multiple injections and list patterns'() {
+        //language=gradle
+        buildFile << '''
+            ideaConfiguration {
+                languageInjections {
+                    'regexp-multi' {
+                        language = 'RegExp'
+                        displayName = 'PatternLibrary (com.example.patterns)'
+                        patterns = [
+                            'psiParameter().ofMethod(0, psiMethod().withName("match").withParameters("java.lang.String").definedInClass("com.example.patterns.PatternLibrary"))',
+                            'psiParameter().ofMethod(0, psiMethod().withName("find").withParameters("java.lang.String").definedInClass("com.example.patterns.PatternLibrary"))'
+                        ]
+                    }
+                    'regexp-single' {
+                        language = 'RegExp'
+                        displayName = 'PatternLibrary (com.example.patterns)'
+                        patterns = ['psiParameter().ofMethod(0, psiMethod().withName("replace").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.patterns.PatternLibrary"))']
+                    }
+                }
+            }
+        '''.stripIndent(true)
+
+        when: 'we run the task'
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
+
+        then: 'all patterns are merged into single injection'
+        def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
+        intelliLangFile.exists()
+
+        //language=xml
+        def expected = '''
+            <project version="4">
+              <component name="LanguageInjectionConfiguration">
+                <injection language="RegExp" injector-id="java">
+                  <display-name>PatternLibrary (com.example.patterns)</display-name>
+                  <single-file value="false"/>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("find").withParameters("java.lang.String").definedInClass("com.example.patterns.PatternLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("match").withParameters("java.lang.String").definedInClass("com.example.patterns.PatternLibrary"))]]></place>
+                  <place><![CDATA[psiParameter().ofMethod(0, psiMethod().withName("replace").withParameters("java.lang.String", "java.lang.String").definedInClass("com.example.patterns.PatternLibrary"))]]></place>
                 </injection>
               </component>
             </project>

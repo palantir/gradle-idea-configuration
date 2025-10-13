@@ -38,12 +38,12 @@ ideaConfiguration {
         'sql-executor' {
             language = 'SQL'
             displayName = 'SqlExecutor.execute (com.example)'
-            pattern = 'psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))'
+            patterns = ['psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.SqlExecutor"))']
         }
         'html-renderer' {
             language = 'HTML'
             displayName = 'HtmlRenderer.render (com.example)'
-            pattern = 'psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))'
+            patterns = ['psiParameter().ofMethod(0, psiMethod().withName("render").withParameters("java.lang.String").definedInClass("com.example.HtmlRenderer"))']
         }
     }
 }
