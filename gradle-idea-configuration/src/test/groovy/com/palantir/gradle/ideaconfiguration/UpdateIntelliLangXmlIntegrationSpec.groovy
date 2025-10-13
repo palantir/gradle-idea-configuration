@@ -40,7 +40,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         '''.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we dont generate the config'
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
@@ -62,7 +62,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         '''.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
@@ -104,7 +104,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         '''.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
@@ -163,7 +163,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         intelliLangFile.text = existing
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config with both injections'
         def newIntelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
@@ -215,7 +215,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         '''.stripIndent(true)
 
         when: 'we run the task'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'all patterns with same language and display name are merged into single injection with multiple place elements'
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
@@ -277,7 +277,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         intelliLangFile.text = existing
 
         when: 'we run the task'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'new patterns are merged with existing patterns into single injection'
         def newIntelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')
@@ -352,7 +352,7 @@ class UpdateIntelliLangXmlIntegrationSpec extends IntegrationSpec {
         '''.stripIndent(true)
 
         when: 'we run the task'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'complex patterns are properly merged by language and display name'
         def intelliLangFile = new File(projectDir, '.idea/IntelliLang.xml')

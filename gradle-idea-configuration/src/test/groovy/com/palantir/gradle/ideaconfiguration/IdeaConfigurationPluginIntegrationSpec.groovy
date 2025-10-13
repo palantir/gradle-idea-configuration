@@ -35,7 +35,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         """.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we dont generate the config'
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -75,7 +75,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         """.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -109,7 +109,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         """.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -143,7 +143,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         """.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -187,7 +187,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         externalDepsFile.text = existing
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -230,7 +230,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         externalDepsFile.text = existing
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -274,7 +274,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         externalDepsFile.text = existing
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -318,7 +318,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         externalDepsFile.text = existing
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -360,7 +360,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         externalDepsFile.text = existing
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def newExternalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')
@@ -389,7 +389,7 @@ class IdeaConfigurationPluginIntegrationSpec extends IntegrationSpec {
         """.stripIndent(true)
 
         when: 'we run the first time'
-        runTasksSuccessfully('-Didea.active=true')
+        runTasksSuccessfully('-Didea.active=true', '-Didea.sync.active=true')
 
         then: 'we generate the correct config'
         def externalDepsFile = new File(projectDir, '.idea/externalDependencies.xml')

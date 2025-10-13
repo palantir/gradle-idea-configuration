@@ -35,7 +35,7 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
         IdeaConfigurationExtension extension =
                 project.getExtensions().create("ideaConfiguration", IdeaConfigurationExtension.class);
 
-        if (!Boolean.getBoolean("idea.active")) {
+        if (!Boolean.getBoolean("idea.active") || !Boolean.getBoolean("idea.sync.active")) {
             return;
         }
 

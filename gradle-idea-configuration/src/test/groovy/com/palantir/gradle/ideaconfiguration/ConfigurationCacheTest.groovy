@@ -38,7 +38,7 @@ class ConfigurationCacheTest extends ConfigurationCacheSpec {
         """.stripIndent(true)
 
         expect:
-        runTasksWithConfigurationCacheAndCheck('classes', '-Didea.active=true')
+        runTasksWithConfigurationCacheAndCheck('classes', '-Didea.active=true', '-Didea.sync.active=true')
     }
 
     def "updateExternalDepsXml task runs with configuration cache"() {
@@ -54,6 +54,6 @@ class ConfigurationCacheTest extends ConfigurationCacheSpec {
         """.stripIndent(true)
 
         expect:
-        runTasksWithConfigurationCacheAndCheck('updateExternalDepsXml', '-Didea.active=true')
+        runTasksWithConfigurationCacheAndCheck('updateExternalDepsXml', '-Didea.active=true', '-Didea.sync.active=true')
     }
 }
