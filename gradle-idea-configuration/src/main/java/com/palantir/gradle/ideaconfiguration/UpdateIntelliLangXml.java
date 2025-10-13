@@ -34,7 +34,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -141,43 +140,6 @@ public abstract class UpdateIntelliLangXml extends DefaultTask {
                 .build();
     }
 
-    /**
-     * Composite key for uniquely identifying an injection by display name, language, and injector ID.
-     */
-    private static final class InjectionKey {
-        private final String displayName;
-        private final String language;
-        private final String injectorId;
-
-        private InjectionKey(String displayName, String language, String injectorId) {
-            this.displayName = displayName;
-            this.language = language;
-            this.injectorId = injectorId;
-        }
-
-        static InjectionKey from(IntelliLangInjection injection) {
-            return new InjectionKey(injection.displayName(), injection.language(), injection.injectorId());
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (!(obj instanceof InjectionKey other)) {
-                return false;
-            }
-            return Objects.equals(displayName, other.displayName)
-                    && Objects.equals(language, other.language)
-                    && Objects.equals(injectorId, other.injectorId);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(displayName, language, injectorId);
-        }
-    }
-
     private static IntelliLangProject createNewProject(List<IntelliLangInjection> injections) {
         // Merge injections with same composite key before creating project
         Map<InjectionKey, IntelliLangInjection> mergedMap = injections.stream()
@@ -208,6 +170,15 @@ public abstract class UpdateIntelliLangXml extends DefaultTask {
                     "Failed to write back to configuration file: "
                             + getOutputFile().get(),
                     e);
+        }
+    }
+
+    /**
+     * Composite key for uniquely identifying an injection by display name, language, and injector ID.
+     */
+    private record InjectionKey(String displayName, String language, String injectorId) {
+        static InjectionKey from(IntelliLangInjection injection) {
+            return new InjectionKey(injection.displayName(), injection.language(), injection.injectorId());
         }
     }
 }

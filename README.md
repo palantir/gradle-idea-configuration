@@ -31,8 +31,7 @@ ideaConfiguration {
 
 ### Language Injections
 
-Configure IntelliJ language injections for your code. This is useful when you have methods that accept string parameters containing code in other languages (SQL, HTML, RegExp, etc.).
-
+Configure IntelliJ language injections for your code. 
 ```gradle
 ideaConfiguration {
     languageInjections {

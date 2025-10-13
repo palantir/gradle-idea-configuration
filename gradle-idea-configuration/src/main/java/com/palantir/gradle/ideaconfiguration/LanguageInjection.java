@@ -57,8 +57,8 @@ public abstract class LanguageInjection implements Named, Serializable {
 
     /**
      * The PSI pattern that defines where the language should be injected. Example:
-     * psiParameter().ofMethod(0,
-     * psiMethod().withName("execute").withParameters("java.lang.String").definedInClass("com.example.Executor"))
+     * psiParameter().ofMethod(0, psiMethod().withName("execute").withParameters("java.lang.String")
+     * .definedInClass("com.example.Executor"))
      */
     @Input
     public abstract Property<String> getPattern();
