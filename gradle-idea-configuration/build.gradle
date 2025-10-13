@@ -8,6 +8,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'com.palantir.gradle.better-exec:better-exec'
 
     annotationProcessor 'org.immutables:value'
     compileOnly 'org.immutables:value::annotations'
