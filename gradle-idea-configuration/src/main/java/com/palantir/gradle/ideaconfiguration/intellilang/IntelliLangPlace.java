@@ -34,11 +34,7 @@ public interface IntelliLangPlace {
     @JacksonXmlCData
     String pattern();
 
-    static ImmutableIntelliLangPlace.Builder builder() {
-        return ImmutableIntelliLangPlace.builder();
-    }
-
     static IntelliLangPlace of(String pattern) {
-        return builder().pattern(pattern).build();
+        return ImmutableIntelliLangPlace.builder().pattern(pattern).build();
     }
 }

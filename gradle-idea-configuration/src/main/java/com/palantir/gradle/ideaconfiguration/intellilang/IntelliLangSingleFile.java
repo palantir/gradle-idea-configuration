@@ -35,7 +35,7 @@ public interface IntelliLangSingleFile {
         return "false";
     }
 
-    static ImmutableIntelliLangSingleFile.Builder builder() {
-        return ImmutableIntelliLangSingleFile.builder();
+    static IntelliLangSingleFile defaultSingleFile() {
+        return ImmutableIntelliLangSingleFile.builder().build();
     }
 }

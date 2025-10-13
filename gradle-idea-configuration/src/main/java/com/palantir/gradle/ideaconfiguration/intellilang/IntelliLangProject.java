@@ -37,11 +37,10 @@ public interface IntelliLangProject {
     @JacksonXmlProperty(localName = "component")
     IntelliLangComponent component();
 
-    static ImmutableIntelliLangProject.Builder builder() {
-        return ImmutableIntelliLangProject.builder();
-    }
-
     static IntelliLangProject of(IntelliLangComponent component, String version) {
-        return builder().component(component).version(version).build();
+        return ImmutableIntelliLangProject.builder()
+                .component(component)
+                .version(version)
+                .build();
     }
 }

@@ -47,7 +47,7 @@ public interface IntelliLangInjection {
     @JacksonXmlProperty(localName = "single-file")
     @Value.Default
     default IntelliLangSingleFile singleFile() {
-        return ImmutableIntelliLangSingleFile.builder().build();
+        return IntelliLangSingleFile.defaultSingleFile();
     }
 
     @JacksonXmlProperty(localName = "place")
@@ -59,13 +59,9 @@ public interface IntelliLangInjection {
     }
 
     static IntelliLangInjection from(LanguageInjection injection) {
-        String displayName = injection.getDisplayName().isPresent()
-                ? injection.getDisplayName().get()
-                : injection.getName();
-
         return builder()
                 .language(injection.getLanguage().get())
-                .displayName(displayName)
+                .displayName(injection.getDisplayName().get())
                 .addPlaces(IntelliLangPlace.of(injection.getPattern().get()))
                 .build();
     }

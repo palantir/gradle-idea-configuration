@@ -41,11 +41,7 @@ public interface IntelliLangComponent {
     @JacksonXmlElementWrapper(useWrapping = false)
     List<IntelliLangInjection> injections();
 
-    static ImmutableIntelliLangComponent.Builder builder() {
-        return ImmutableIntelliLangComponent.builder();
-    }
-
     static IntelliLangComponent of(List<IntelliLangInjection> injections) {
-        return builder().injections(injections).build();
+        return ImmutableIntelliLangComponent.builder().injections(injections).build();
     }
 }

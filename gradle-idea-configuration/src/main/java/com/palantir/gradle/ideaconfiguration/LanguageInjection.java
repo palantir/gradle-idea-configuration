@@ -22,7 +22,6 @@ import org.gradle.api.Named;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Optional;
 
 /**
  * Represents a language injection configuration for IntelliJ IDEA.
@@ -51,10 +50,9 @@ public abstract class LanguageInjection implements Named, Serializable {
     public abstract Property<String> getLanguage();
 
     /**
-     * The display name shown in IntelliJ (optional).
+     * The display name shown in IntelliJ.
      */
     @Input
-    @Optional
     public abstract Property<String> getDisplayName();
 
     /**
