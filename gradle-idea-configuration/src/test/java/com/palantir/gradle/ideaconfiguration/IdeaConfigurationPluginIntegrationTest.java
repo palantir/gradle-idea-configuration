@@ -15,6 +15,8 @@
  */
 package com.palantir.gradle.ideaconfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.palantir.gradle.testing.execution.GradleInvoker;
 import com.palantir.gradle.testing.files.ProjectFile;
 import com.palantir.gradle.testing.junit.DisabledConfigurationCache;
@@ -44,9 +46,8 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we dont generate the config
         ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
-        externalDepsFile.assertThat().doesNotExist();
+        externalDepsFile.assertThat().as("we dont generate the config").doesNotExist();
     }
 
     @Test
@@ -64,9 +65,8 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs().buildsSuccessfully();
 
-        // we dont generate the config
         ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
-        externalDepsFile.assertThat().doesNotExist();
+        externalDepsFile.assertThat().as("we dont generate the config").doesNotExist();
     }
 
     @Test
@@ -85,7 +85,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -94,13 +93,9 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -121,7 +116,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -130,13 +124,9 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -158,7 +148,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -167,13 +156,9 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -201,7 +186,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -211,13 +195,9 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -243,7 +223,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="3">
               <component name="ExternalDependencies">
@@ -252,13 +231,9 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -287,7 +262,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -296,13 +270,9 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -331,7 +301,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -340,16 +309,11 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
-    // provided
     @Test
     void merges_with_existing_external_dependencies_xml_does_not_override_version_if_no_version_provided(
             GradleInvoker gradle, RootProject rootProject) {
@@ -374,9 +338,7 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
-        externalDepsFile.assertThat().exists();
 
         String expected = """
             <project version="4">
@@ -386,7 +348,8 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        externalDepsFile.assertThat().content().isEqualToIgnoringWhitespace(expected);
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 
     @Test
@@ -402,7 +365,6 @@ class IdeaConfigurationPluginIntegrationTest {
         // we run the first time
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        // we generate the correct config
         String expected = """
             <project version="4">
               <component name="ExternalDependencies">
@@ -411,12 +373,8 @@ class IdeaConfigurationPluginIntegrationTest {
             </project>
             """.trim();
 
-        rootProject
-                .directory(".idea")
-                .file("externalDependencies.xml")
-                .assertThat()
-                .exists()
-                .content()
-                .isEqualToIgnoringWhitespace(expected);
+        ProjectFile<?> externalDepsFile = rootProject.directory(".idea").file("externalDependencies.xml");
+        externalDepsFile.assertThat().as("we generate the correct config").exists();
+        assertThat(externalDepsFile.text().trim()).isEqualTo(expected);
     }
 }
