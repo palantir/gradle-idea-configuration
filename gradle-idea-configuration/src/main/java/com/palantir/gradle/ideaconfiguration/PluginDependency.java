@@ -39,9 +39,10 @@ public abstract class PluginDependency implements Named {
     @Optional
     @Input
     public final Provider<String> getMinVersion() {
-        return getMinRequiredVersions().map(requiredMinVersions -> requiredMinVersions.stream()
-                .max(PluginDependency::compareVersions)
-                .orElse(null));
+        return getMinRequiredVersions()
+                .map(requiredMinVersions -> requiredMinVersions.stream()
+                        .max(PluginDependency::compareVersions)
+                        .orElse(null));
     }
 
     public final void atLeastVersion(String candidateVersion) {
