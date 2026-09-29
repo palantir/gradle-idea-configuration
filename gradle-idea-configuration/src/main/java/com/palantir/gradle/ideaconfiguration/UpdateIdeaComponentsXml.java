@@ -22,8 +22,8 @@ import groovy.xml.XmlParser;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,12 +33,9 @@ import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.file.Directory;
-import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.provider.SetProperty;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFiles;
 import org.gradle.api.tasks.TaskAction;
@@ -51,14 +48,10 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
     @Nested
     public abstract SetProperty<IdeaComponent> getComponents();
 
-    @Internal("The files written are tracked by getXmlFiles()")
-    public abstract DirectoryProperty getIdeaDirectory();
-
     @Inject
     protected abstract ProjectLayout getProjectLayout();
 
     public UpdateIdeaComponentsXml() {
-        getIdeaDirectory().set(getProjectLayout().getProjectDirectory().dir(".idea"));
         onlyIf(
                 "at least one component is configured",
                 _task -> !getComponents().get().isEmpty());
@@ -68,23 +61,23 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
     public final FileCollection getXmlFiles() {
         return getProjectLayout()
                 .files(getComponents()
-                        .zip(
-                                getIdeaDirectory(),
-                                (components, ideaDirectory) -> components.stream()
-                                        .map(component -> xmlFile(ideaDirectory, component))
-                                        .collect(Collectors.toSet())));
+                        .map(components ->
+                                components.stream().map(this::xmlFile).collect(Collectors.toSet())));
     }
 
     @TaskAction
     public final void updateXml() {
-        Directory ideaDirectory = getIdeaDirectory().get();
-        Map<File, List<IdeaComponent>> componentsByFile = getComponents().get().stream()
-                .collect(Collectors.groupingBy(component -> xmlFile(ideaDirectory, component)));
-        componentsByFile.forEach(UpdateIdeaComponentsXml::updateXmlFile);
+        getComponents().get().stream()
+                .collect(Collectors.groupingBy(this::xmlFile))
+                .forEach(UpdateIdeaComponentsXml::updateXmlFile);
     }
 
-    private static File xmlFile(Directory ideaDirectory, IdeaComponent component) {
-        return ideaDirectory.file(component.getFile().get()).getAsFile();
+    private File xmlFile(IdeaComponent component) {
+        return getProjectLayout()
+                .getProjectDirectory()
+                .dir(".idea")
+                .file(component.getFile().get())
+                .getAsFile();
     }
 
     private static void updateXmlFile(File xmlFile, List<IdeaComponent> components) {
@@ -102,7 +95,7 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
 
     private static Node readOrCreate(File xmlFile) {
         if (!xmlFile.isFile()) {
-            return new Node(null, "project", orderedAttributes("version", "4"));
+            return new Node(null, "project", new LinkedHashMap<>(Map.of("version", "4")));
         }
         try {
             return new XmlParser().parse(xmlFile);
@@ -119,7 +112,8 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
                         .filter(child ->
                                 elementName.equals(child.name()) && nameAttribute.equals(child.attribute("name")))
                         .findFirst()
-                        .orElseGet(() -> parent.appendNode(elementName, orderedAttributes("name", nameAttribute)));
+                        .orElseGet(() ->
+                                parent.appendNode(elementName, new LinkedHashMap<>(Map.of("name", nameAttribute))));
     }
 
     @SuppressWarnings("unchecked")
@@ -127,24 +121,13 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
         return node.attributes();
     }
 
-    private static Map<String, String> orderedAttributes(String name, String value) {
-        Map<String, String> attributes = new LinkedHashMap<>();
-        attributes.put(name, value);
-        return attributes;
-    }
-
     private static void write(File xmlFile, Node rootNode) {
+        StringWriter xml = new StringWriter();
+        XmlNodePrinter printer = new XmlNodePrinter(new PrintWriter(xml));
+        printer.setPreserveWhitespace(true);
+        printer.print(rootNode);
         try {
-            Files.createDirectories(xmlFile.toPath().getParent());
-            try (PrintWriter writer =
-                    new PrintWriter(Files.newBufferedWriter(xmlFile.toPath(), StandardCharsets.UTF_8))) {
-                XmlNodePrinter printer = new XmlNodePrinter(writer);
-                printer.setPreserveWhitespace(true);
-                printer.print(rootNode);
-                if (writer.checkError()) {
-                    throw new IOException("Error writing " + xmlFile);
-                }
-            }
+            Files.writeString(xmlFile.toPath(), xml.toString());
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to write back to configuration file: " + xmlFile, e);
         }

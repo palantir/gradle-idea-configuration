@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.palantir.gradle.testing.execution.GradleInvoker;
 import com.palantir.gradle.testing.execution.InvocationResult;
+import com.palantir.gradle.testing.files.ProjectFile;
 import com.palantir.gradle.testing.junit.GradlePluginTests;
 import com.palantir.gradle.testing.project.RootProject;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,15 +50,45 @@ class IdeaComponentsIntegrationTest {
 
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        assertThat(rootProject.directory(".idea").file("compiler.xml").text().trim())
-                .isEqualTo("""
-                    <project version="4">
-                      <component name="TypeScriptCompiler">
-                        <option name="versionType" value="SERVICE_DIRECTORY"/>
-                        <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
-                      </component>
-                    </project>
-                    """.trim());
+        ProjectFile<?> compilerXml = rootProject.directory(".idea").file("compiler.xml");
+        assertThat(compilerXml.text().trim()).isEqualTo("""
+            <project version="4">
+              <component name="TypeScriptCompiler">
+                <option name="versionType" value="SERVICE_DIRECTORY"/>
+                <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
+              </component>
+            </project>
+            """.trim());
+    }
+
+    @Test
+    void options_from_repeated_component_declarations_are_merged(GradleInvoker gradle, RootProject rootProject) {
+        rootProject.buildGradle().append("""
+            ideaConfiguration {
+                components {
+                    'TypeScriptCompiler' {
+                        file = 'compiler.xml'
+                        options.put('versionType', 'BUNDLED')
+                    }
+                    'TypeScriptCompiler' {
+                        options.put('versionType', 'SERVICE_DIRECTORY')
+                        options.put('typeScriptServiceDirectory', '/path/to/typescript')
+                    }
+                }
+            }
+            """);
+
+        gradle.withArgs("-Didea.active=true").buildsSuccessfully();
+
+        ProjectFile<?> compilerXml = rootProject.directory(".idea").file("compiler.xml");
+        assertThat(compilerXml.text().trim()).isEqualTo("""
+            <project version="4">
+              <component name="TypeScriptCompiler">
+                <option name="versionType" value="SERVICE_DIRECTORY"/>
+                <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
+              </component>
+            </project>
+            """.trim());
     }
 
     @Test
@@ -99,7 +130,8 @@ class IdeaComponentsIntegrationTest {
                 }
             }
             """);
-        rootProject.directory(".idea").file("compiler.xml").overwrite("""
+        ProjectFile<?> compilerXml = rootProject.directory(".idea").file("compiler.xml");
+        compilerXml.overwrite("""
             <?xml version="1.0" encoding="UTF-8"?>
             <project version="4">
               <component name="CompilerConfiguration">
@@ -118,23 +150,22 @@ class IdeaComponentsIntegrationTest {
 
         gradle.withArgs("-Didea.active=true").buildsSuccessfully();
 
-        assertThat(rootProject.directory(".idea").file("compiler.xml").text().trim())
-                .isEqualTo("""
-                    <project version="4">
-                      <component name="CompilerConfiguration">
-                        <annotationProcessing>
-                          <profile name="Gradle Imported" enabled="true">
-                            <outputRelativeToContentRoot value="true"/>
-                          </profile>
-                        </annotationProcessing>
-                      </component>
-                      <component name="TypeScriptCompiler">
-                        <option name="versionType" value="SERVICE_DIRECTORY"/>
-                        <option name="useTypesFromServer" value="true"/>
-                        <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
-                      </component>
-                    </project>
-                    """.trim());
+        assertThat(compilerXml.text().trim()).isEqualTo("""
+            <project version="4">
+              <component name="CompilerConfiguration">
+                <annotationProcessing>
+                  <profile name="Gradle Imported" enabled="true">
+                    <outputRelativeToContentRoot value="true"/>
+                  </profile>
+                </annotationProcessing>
+              </component>
+              <component name="TypeScriptCompiler">
+                <option name="versionType" value="SERVICE_DIRECTORY"/>
+                <option name="useTypesFromServer" value="true"/>
+                <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
+              </component>
+            </project>
+            """.trim());
     }
 
     @Test
