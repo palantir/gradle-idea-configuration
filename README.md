@@ -28,3 +28,21 @@ ideaConfiguration {
     }
 }
 ```
+
+### Components
+
+Sets `<option name="..." value="..."/>` entries on a `<component>` in an XML file under `.idea/`. The rest of the file is left as it is.
+
+```gradle
+ideaConfiguration {
+    components {
+        'TypeScriptCompiler' {
+            file = 'compiler.xml'
+            options.put('versionType', 'SERVICE_DIRECTORY')
+            options.put('typeScriptServiceDirectory', provider { ... })
+        }
+    }
+}
+```
+
+Option values can be providers. They are evaluated when the `updateIdeaComponentsXml` task runs during IntelliJ sync, so they can resolve root project configurations.

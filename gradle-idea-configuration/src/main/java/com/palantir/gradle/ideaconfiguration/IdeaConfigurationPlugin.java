@@ -44,10 +44,16 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
                     task.getDependencies().set(extension.getExternalDependencies());
                 });
 
-        // Add the task to the Gradle start parameters so it executes automatically.
+        TaskProvider<UpdateIdeaComponentsXml> updateComponentsTask = project.getTasks()
+                .register("updateIdeaComponentsXml", UpdateIdeaComponentsXml.class, task -> {
+                    task.getComponents().set(extension.getComponents());
+                });
+
+        // Add the tasks to the Gradle start parameters so they execute automatically.
         StartParameter startParameter = project.getGradle().getStartParameter();
         List<String> taskNames = new ArrayList<>(startParameter.getTaskNames());
         taskNames.add(":" + updateTask.getName());
+        taskNames.add(":" + updateComponentsTask.getName());
         startParameter.setTaskNames(taskNames);
     }
 }
