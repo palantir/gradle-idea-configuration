@@ -88,12 +88,24 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
         Node rootNode = readOrCreate(xmlFile);
         components.forEach(component -> {
             Node componentNode = matchOrCreateChild(rootNode, "component", component.getName());
-            component.getOptions().get().forEach((name, value) -> {
+            options(component).forEach((name, value) -> {
                 Node optionNode = matchOrCreateChild(componentNode, "option", name);
                 attributes(optionNode).put("value", value);
             });
         });
         write(xmlFile, rootNode);
+    }
+
+    private static Map<String, String> options(IdeaComponent component) {
+        Map<String, String> options = new LinkedHashMap<>();
+        component.getOptions().get().forEach(option -> {
+            String existingValue = options.putIfAbsent(option.name(), option.value());
+            if (existingValue != null && !existingValue.equals(option.value())) {
+                throw new GradleException("IntelliJ component '" + component.getName() + "' sets option '"
+                        + option.name() + "' to both '" + existingValue + "' and '" + option.value() + "'");
+            }
+        });
+        return options;
     }
 
     private static Node readOrCreate(File xmlFile) {

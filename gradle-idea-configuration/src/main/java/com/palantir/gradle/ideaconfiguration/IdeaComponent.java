@@ -16,9 +16,11 @@
 
 package com.palantir.gradle.ideaconfiguration;
 
+import java.io.Serializable;
 import org.gradle.api.Named;
-import org.gradle.api.provider.MapProperty;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 
 public abstract class IdeaComponent implements Named {
@@ -31,7 +33,19 @@ public abstract class IdeaComponent implements Named {
     @Input
     public abstract Property<String> getFile();
 
-    /** Written as {@code <option name="key" value="value"/>} children of the component. */
+    /** Every {@link #option} call, including repeated calls for the same option name. */
     @Input
-    public abstract MapProperty<String, String> getOptions();
+    public abstract ListProperty<Option> getOptions();
+
+    /** Written as an {@code <option name="name" value="value"/>} child of the component. */
+    public final void option(String name, String value) {
+        getOptions().add(new Option(name, value));
+    }
+
+    /** Written as an {@code <option name="name" value="value"/>} child of the component. */
+    public final void option(String name, Provider<String> value) {
+        getOptions().add(value.map(resolvedValue -> new Option(name, resolvedValue)));
+    }
+
+    public record Option(String name, String value) implements Serializable {}
 }

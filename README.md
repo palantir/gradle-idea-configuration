@@ -39,8 +39,8 @@ ideaConfiguration {
     components {
         'JavacSettings' {
             file = 'compiler.xml'
-            options.put('PREFER_TARGET_JDK_COMPILER', 'false')
-            options.put('ADDITIONAL_OPTIONS_STRING', provider { ... })
+            option('PREFER_TARGET_JDK_COMPILER', 'false')
+            option('ADDITIONAL_OPTIONS_STRING', provider { ... })
         }
     }
 }
@@ -48,3 +48,4 @@ ideaConfiguration {
 
 The `updateIdeaComponentsXml` task writes them during IntelliJ sync.
 Option values can be providers, which are evaluated after all projects are configured, so they can resolve root project configurations.
+The task fails if an option is set to different values, e.g. by two plugins configuring the same component.

@@ -40,8 +40,8 @@ class IdeaComponentsIntegrationTest {
                 components {
                     'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
-                        options.put('PREFER_TARGET_JDK_COMPILER', 'false')
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        option('PREFER_TARGET_JDK_COMPILER', 'false')
                     }
                 }
             }
@@ -67,11 +67,11 @@ class IdeaComponentsIntegrationTest {
                 components {
                     'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('ADDITIONAL_OPTIONS_STRING', '-Xlint')
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
                     }
                     'JavacSettings' {
-                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
-                        options.put('PREFER_TARGET_JDK_COMPILER', 'false')
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        option('PREFER_TARGET_JDK_COMPILER', 'false')
                     }
                 }
             }
@@ -91,13 +91,37 @@ class IdeaComponentsIntegrationTest {
     }
 
     @Test
+    void fails_if_repeated_component_declarations_set_an_option_to_different_values(
+            GradleInvoker gradle, RootProject rootProject) {
+        rootProject.buildGradle().append("""
+            ideaConfiguration {
+                components {
+                    'JavacSettings' {
+                        file = 'compiler.xml'
+                        option('ADDITIONAL_OPTIONS_STRING', '-Xlint')
+                    }
+                    'JavacSettings' {
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                    }
+                }
+            }
+            """);
+
+        InvocationResult result = gradle.withArgs("-Didea.active=true").buildsWithFailure();
+
+        assertThat(result.output())
+                .contains("IntelliJ component 'JavacSettings' sets option 'ADDITIONAL_OPTIONS_STRING'"
+                        + " to both '-Xlint' and '-parameters'");
+    }
+
+    @Test
     void nothing_happens_if_no_idea_active(GradleInvoker gradle, RootProject rootProject) {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
                     'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
                     }
                 }
             }
@@ -122,7 +146,7 @@ class IdeaComponentsIntegrationTest {
             ideaConfiguration {
                 components {
                     'JavacSettings' {
-                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
                     }
                 }
             }
@@ -141,8 +165,8 @@ class IdeaComponentsIntegrationTest {
                 components {
                     'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
-                        options.put('PREFER_TARGET_JDK_COMPILER', 'false')
+                        option('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        option('PREFER_TARGET_JDK_COMPILER', 'false')
                     }
                 }
             }
@@ -192,15 +216,15 @@ class IdeaComponentsIntegrationTest {
                 components {
                     'FirstComponent' {
                         file = 'shared.xml'
-                        options.put('first', '1')
+                        option('first', '1')
                     }
                     'SecondComponent' {
                         file = 'shared.xml'
-                        options.put('second', '2')
+                        option('second', '2')
                     }
                     'OtherComponent' {
                         file = 'other.xml'
-                        options.put('other', '3')
+                        option('other', '3')
                     }
                 }
             }
@@ -238,7 +262,7 @@ class IdeaComponentsIntegrationTest {
                 ideaConfiguration.components {
                     'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('ADDITIONAL_OPTIONS_STRING', provider { '-processorpath ' + processorPath.singleFile.name })
+                        option('ADDITIONAL_OPTIONS_STRING', provider { '-processorpath ' + processorPath.singleFile.name })
                     }
                 }
             }
