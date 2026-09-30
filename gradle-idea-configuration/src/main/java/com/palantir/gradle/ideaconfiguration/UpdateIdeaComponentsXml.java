@@ -73,6 +73,10 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
     }
 
     private File xmlFile(IdeaComponent component) {
+        if (!component.getFile().isPresent()) {
+            throw new GradleException("IntelliJ component '" + component.getName()
+                    + "' must set the file it lives in under .idea/, e.g. file = 'compiler.xml'");
+        }
         return getProjectLayout()
                 .getProjectDirectory()
                 .dir(".idea")
@@ -84,11 +88,10 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
         Node rootNode = readOrCreate(xmlFile);
         components.forEach(component -> {
             Node componentNode = matchOrCreateChild(rootNode, "component", component.getName());
-            component
-                    .getOptions()
-                    .get()
-                    .forEach((name, value) -> attributes(matchOrCreateChild(componentNode, "option", name))
-                            .put("value", value));
+            component.getOptions().get().forEach((name, value) -> {
+                Node optionNode = matchOrCreateChild(componentNode, "option", name);
+                attributes(optionNode).put("value", value);
+            });
         });
         write(xmlFile, rootNode);
     }
@@ -105,15 +108,13 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
     }
 
     private static Node matchOrCreateChild(Node parent, String elementName, String nameAttribute) {
-        return ((List<?>) parent.children())
-                .stream()
-                        .filter(Node.class::isInstance)
-                        .map(Node.class::cast)
-                        .filter(child ->
-                                elementName.equals(child.name()) && nameAttribute.equals(child.attribute("name")))
-                        .findFirst()
-                        .orElseGet(() ->
-                                parent.appendNode(elementName, new LinkedHashMap<>(Map.of("name", nameAttribute))));
+        List<?> children = parent.children();
+        return children.stream()
+                .filter(Node.class::isInstance)
+                .map(Node.class::cast)
+                .filter(child -> elementName.equals(child.name()) && nameAttribute.equals(child.attribute("name")))
+                .findFirst()
+                .orElseGet(() -> parent.appendNode(elementName, new LinkedHashMap<>(Map.of("name", nameAttribute))));
     }
 
     @SuppressWarnings("unchecked")

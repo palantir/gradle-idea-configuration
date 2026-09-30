@@ -31,7 +31,8 @@ ideaConfiguration {
 
 ### Components
 
-Sets `<option name="..." value="..."/>` entries on a `<component>` in an XML file under `.idea/`. The rest of the file is left as it is.
+Sets `<option name="..." value="..."/>` entries on a `<component>` in an XML file under `.idea/`.
+Other components and options in the file are kept.
 
 ```gradle
 ideaConfiguration {
@@ -45,4 +46,5 @@ ideaConfiguration {
 }
 ```
 
-Option values can be providers. They are evaluated when the `updateIdeaComponentsXml` task runs during IntelliJ sync, so they can resolve root project configurations.
+The `updateIdeaComponentsXml` task writes them during IntelliJ sync.
+Option values can be providers, which are evaluated after all projects are configured, so they can resolve root project configurations.

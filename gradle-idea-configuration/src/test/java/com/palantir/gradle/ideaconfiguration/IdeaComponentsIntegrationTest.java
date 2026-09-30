@@ -31,7 +31,6 @@ class IdeaComponentsIntegrationTest {
     @BeforeEach
     void setup(RootProject rootProject) {
         rootProject.buildGradle().plugins().add("com.palantir.idea-configuration");
-        rootProject.buildGradle().plugins().add("idea");
     }
 
     @Test
@@ -118,6 +117,24 @@ class IdeaComponentsIntegrationTest {
     }
 
     @Test
+    void fails_naming_the_component_if_its_file_is_not_set(GradleInvoker gradle, RootProject rootProject) {
+        rootProject.buildGradle().append("""
+            ideaConfiguration {
+                components {
+                    'TypeScriptCompiler' {
+                        options.put('versionType', 'SERVICE_DIRECTORY')
+                    }
+                }
+            }
+            """);
+
+        InvocationResult result = gradle.withArgs("-Didea.active=true").buildsWithFailure();
+
+        assertThat(result.output())
+                .contains("IntelliJ component 'TypeScriptCompiler' must set the file it lives in under .idea/");
+    }
+
+    @Test
     void merges_into_an_existing_file(GradleInvoker gradle, RootProject rootProject) {
         rootProject.buildGradle().append("""
             ideaConfiguration {
@@ -173,13 +190,13 @@ class IdeaComponentsIntegrationTest {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
-                    'SecondComponent' {
-                        file = 'shared.xml'
-                        options.put('second', '2')
-                    }
                     'FirstComponent' {
                         file = 'shared.xml'
                         options.put('first', '1')
+                    }
+                    'SecondComponent' {
+                        file = 'shared.xml'
+                        options.put('second', '2')
                     }
                     'OtherComponent' {
                         file = 'other.xml'
@@ -216,15 +233,12 @@ class IdeaComponentsIntegrationTest {
     void option_values_can_lazily_resolve_root_project_configurations(GradleInvoker gradle, RootProject rootProject) {
         rootProject.directory("typescript").file("package.json").overwrite("{}");
         rootProject.buildGradle().append("""
-            def typeScriptServiceDirectory = provider {
-                configurations.detachedConfiguration(dependencies.create(files('typescript'))).singleFile.name
-            }
-
-            ideaConfiguration {
-                components {
+            gradle.projectsEvaluated {
+                def typeScript = configurations.detachedConfiguration(dependencies.create(files('typescript')))
+                ideaConfiguration.components {
                     'TypeScriptCompiler' {
                         file = 'compiler.xml'
-                        options.put('typeScriptServiceDirectory', typeScriptServiceDirectory)
+                        options.put('typeScriptServiceDirectory', provider { typeScript.singleFile.name })
                     }
                 }
             }
