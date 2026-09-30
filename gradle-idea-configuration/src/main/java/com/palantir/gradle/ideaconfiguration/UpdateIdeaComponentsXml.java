@@ -34,6 +34,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -45,9 +48,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 @DisableCachingByDefault(because = "Updates IntelliJ configuration files in place")
@@ -139,38 +140,23 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
                 .filter(child ->
                         elementName.equals(child.getTagName()) && nameAttribute.equals(child.getAttribute("name")))
                 .findFirst()
-                .orElseGet(() -> appendChild(parent, elementName, nameAttribute));
-    }
-
-    private static Element appendChild(Element parent, String elementName, String nameAttribute) {
-        Document document = parent.getOwnerDocument();
-        String parentIndent = "  ".repeat(depth(parent));
-        Node closingWhitespace =
-                parent.getLastChild() instanceof Text text && text.getData().isBlank()
-                        ? text
-                        : parent.appendChild(document.createTextNode("\n" + parentIndent));
-        Element child = document.createElement(elementName);
-        child.setAttribute("name", nameAttribute);
-        parent.insertBefore(document.createTextNode("\n" + parentIndent + "  "), closingWhitespace);
-        parent.insertBefore(child, closingWhitespace);
-        return child;
-    }
-
-    private static int depth(Node node) {
-        int depth = 0;
-        for (Node ancestor = node.getParentNode(); ancestor instanceof Element; ancestor = ancestor.getParentNode()) {
-            depth++;
-        }
-        return depth;
+                .orElseGet(() -> {
+                    Element child = parent.getOwnerDocument().createElement(elementName);
+                    child.setAttribute("name", nameAttribute);
+                    return (Element) parent.appendChild(child);
+                });
     }
 
     private static void write(File xmlFile, Document document) {
         StringWriter xml = new StringWriter();
         try {
+            removeExistingIndentation(document);
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.transform(new DOMSource(document), new StreamResult(xml));
-        } catch (TransformerException e) {
+        } catch (TransformerException | XPathExpressionException e) {
             throw new GradleException("Couldn't serialise configuration file: " + xmlFile, e);
         }
         try {
@@ -178,5 +164,14 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to write back to configuration file: " + xmlFile, e);
         }
+    }
+
+    private static void removeExistingIndentation(Document document) throws XPathExpressionException {
+        NodeList whitespaceText = (NodeList) XPathFactory.newInstance()
+                .newXPath()
+                .evaluate("//text()[normalize-space()='']", document, XPathConstants.NODESET);
+        IntStream.range(0, whitespaceText.getLength())
+                .mapToObj(whitespaceText::item)
+                .forEach(text -> text.getParentNode().removeChild(text));
     }
 }
