@@ -171,7 +171,7 @@ class IdeaComponentsIntegrationTest {
             <project version="4">
               <component name="CompilerConfiguration">
                 <annotationProcessing>
-                  <profile name="Gradle Imported" enabled="true">
+                  <profile enabled="true" name="Gradle Imported">
                     <outputRelativeToContentRoot value="true"/>
                   </profile>
                 </annotationProcessing>
