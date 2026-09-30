@@ -37,10 +37,10 @@ Other components and options in the file are kept.
 ```gradle
 ideaConfiguration {
     components {
-        'TypeScriptCompiler' {
+        'JavacSettings' {
             file = 'compiler.xml'
-            options.put('versionType', 'SERVICE_DIRECTORY')
-            options.put('typeScriptServiceDirectory', provider { ... })
+            options.put('PREFER_TARGET_JDK_COMPILER', 'false')
+            options.put('ADDITIONAL_OPTIONS_STRING', provider { ... })
         }
     }
 }

@@ -38,10 +38,10 @@ class IdeaComponentsIntegrationTest {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
-                    'TypeScriptCompiler' {
+                    'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('versionType', 'SERVICE_DIRECTORY')
-                        options.put('typeScriptServiceDirectory', '/path/to/typescript')
+                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        options.put('PREFER_TARGET_JDK_COMPILER', 'false')
                     }
                 }
             }
@@ -52,9 +52,9 @@ class IdeaComponentsIntegrationTest {
         ProjectFile<?> compilerXml = rootProject.directory(".idea").file("compiler.xml");
         assertThat(compilerXml.text().trim()).isEqualTo("""
             <project version="4">
-              <component name="TypeScriptCompiler">
-                <option name="versionType" value="SERVICE_DIRECTORY"/>
-                <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
+              <component name="JavacSettings">
+                <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters"/>
+                <option name="PREFER_TARGET_JDK_COMPILER" value="false"/>
               </component>
             </project>
             """.trim());
@@ -65,13 +65,13 @@ class IdeaComponentsIntegrationTest {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
-                    'TypeScriptCompiler' {
+                    'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('versionType', 'BUNDLED')
+                        options.put('ADDITIONAL_OPTIONS_STRING', '-Xlint')
                     }
-                    'TypeScriptCompiler' {
-                        options.put('versionType', 'SERVICE_DIRECTORY')
-                        options.put('typeScriptServiceDirectory', '/path/to/typescript')
+                    'JavacSettings' {
+                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        options.put('PREFER_TARGET_JDK_COMPILER', 'false')
                     }
                 }
             }
@@ -82,9 +82,9 @@ class IdeaComponentsIntegrationTest {
         ProjectFile<?> compilerXml = rootProject.directory(".idea").file("compiler.xml");
         assertThat(compilerXml.text().trim()).isEqualTo("""
             <project version="4">
-              <component name="TypeScriptCompiler">
-                <option name="versionType" value="SERVICE_DIRECTORY"/>
-                <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
+              <component name="JavacSettings">
+                <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters"/>
+                <option name="PREFER_TARGET_JDK_COMPILER" value="false"/>
               </component>
             </project>
             """.trim());
@@ -95,9 +95,9 @@ class IdeaComponentsIntegrationTest {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
-                    'TypeScriptCompiler' {
+                    'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('versionType', 'SERVICE_DIRECTORY')
+                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
                     }
                 }
             }
@@ -121,8 +121,8 @@ class IdeaComponentsIntegrationTest {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
-                    'TypeScriptCompiler' {
-                        options.put('versionType', 'SERVICE_DIRECTORY')
+                    'JavacSettings' {
+                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
                     }
                 }
             }
@@ -131,7 +131,7 @@ class IdeaComponentsIntegrationTest {
         InvocationResult result = gradle.withArgs("-Didea.active=true").buildsWithFailure();
 
         assertThat(result.output())
-                .contains("IntelliJ component 'TypeScriptCompiler' must set the file it lives in under .idea/");
+                .contains("IntelliJ component 'JavacSettings' must set the file it lives in under .idea/");
     }
 
     @Test
@@ -139,10 +139,10 @@ class IdeaComponentsIntegrationTest {
         rootProject.buildGradle().append("""
             ideaConfiguration {
                 components {
-                    'TypeScriptCompiler' {
+                    'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('versionType', 'SERVICE_DIRECTORY')
-                        options.put('typeScriptServiceDirectory', '/path/to/typescript')
+                        options.put('ADDITIONAL_OPTIONS_STRING', '-parameters')
+                        options.put('PREFER_TARGET_JDK_COMPILER', 'false')
                     }
                 }
             }
@@ -158,9 +158,9 @@ class IdeaComponentsIntegrationTest {
                   </profile>
                 </annotationProcessing>
               </component>
-              <component name="TypeScriptCompiler">
-                <option name="versionType" value="BUNDLED" />
-                <option name="useTypesFromServer" value="true" />
+              <component name="JavacSettings">
+                <option name="ADDITIONAL_OPTIONS_STRING" value="-Xlint" />
+                <option name="GENERATE_NO_WARNINGS" value="true" />
               </component>
             </project>
             """);
@@ -176,10 +176,10 @@ class IdeaComponentsIntegrationTest {
                   </profile>
                 </annotationProcessing>
               </component>
-              <component name="TypeScriptCompiler">
-                <option name="versionType" value="SERVICE_DIRECTORY"/>
-                <option name="useTypesFromServer" value="true"/>
-                <option name="typeScriptServiceDirectory" value="/path/to/typescript"/>
+              <component name="JavacSettings">
+                <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters"/>
+                <option name="GENERATE_NO_WARNINGS" value="true"/>
+                <option name="PREFER_TARGET_JDK_COMPILER" value="false"/>
               </component>
             </project>
             """.trim());
@@ -231,14 +231,14 @@ class IdeaComponentsIntegrationTest {
 
     @Test
     void option_values_can_lazily_resolve_root_project_configurations(GradleInvoker gradle, RootProject rootProject) {
-        rootProject.directory("typescript").file("package.json").overwrite("{}");
+        rootProject.directory("libs").file("processor.jar").overwrite("");
         rootProject.buildGradle().append("""
             gradle.projectsEvaluated {
-                def typeScript = configurations.detachedConfiguration(dependencies.create(files('typescript')))
+                def processorPath = configurations.detachedConfiguration(dependencies.create(files('libs/processor.jar')))
                 ideaConfiguration.components {
-                    'TypeScriptCompiler' {
+                    'JavacSettings' {
                         file = 'compiler.xml'
-                        options.put('typeScriptServiceDirectory', provider { typeScript.singleFile.name })
+                        options.put('ADDITIONAL_OPTIONS_STRING', provider { '-processorpath ' + processorPath.singleFile.name })
                     }
                 }
             }
@@ -251,6 +251,6 @@ class IdeaComponentsIntegrationTest {
                 .doesNotContain("without an exclusive lock")
                 .doesNotContain("context different than the project context");
         assertThat(rootProject.directory(".idea").file("compiler.xml").text())
-                .contains("<option name=\"typeScriptServiceDirectory\" value=\"typescript\"/>");
+                .contains("<option name=\"ADDITIONAL_OPTIONS_STRING\" value=\"-processorpath processor.jar\"/>");
     }
 }
