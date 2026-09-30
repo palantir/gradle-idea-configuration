@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
@@ -98,13 +99,15 @@ public abstract class UpdateIdeaComponentsXml extends DefaultTask {
 
     private static Map<String, String> options(IdeaComponent component) {
         Map<String, String> options = new LinkedHashMap<>();
-        component.getOptions().get().forEach(option -> {
-            String existingValue = options.putIfAbsent(option.name(), option.value());
-            if (existingValue != null && !existingValue.equals(option.value())) {
-                throw new GradleException("IntelliJ component '" + component.getName() + "' sets option '"
-                        + option.name() + "' to both '" + existingValue + "' and '" + option.value() + "'");
-            }
-        });
+        component
+                .getOptions()
+                .get()
+                .forEach(option -> Optional.ofNullable(options.putIfAbsent(option.name(), option.value()))
+                        .filter(existingValue -> !existingValue.equals(option.value()))
+                        .ifPresent(existingValue -> {
+                            throw new GradleException("IntelliJ component '" + component.getName() + "' sets option '"
+                                    + option.name() + "' to both '" + existingValue + "' and '" + option.value() + "'");
+                        }));
         return options;
     }
 
