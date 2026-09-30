@@ -28,3 +28,24 @@ ideaConfiguration {
     }
 }
 ```
+
+### Components
+
+Sets `<option name="..." value="..."/>` entries on a `<component>` in an XML file under `.idea/`.
+Other components and options in the file are kept.
+
+```gradle
+ideaConfiguration {
+    components {
+        'JavacSettings' {
+            file = 'compiler.xml'
+            option('PREFER_TARGET_JDK_COMPILER', 'false')
+            option('ADDITIONAL_OPTIONS_STRING', provider { ... })
+        }
+    }
+}
+```
+
+The `updateIdeaComponentsXml` task writes them during IntelliJ sync.
+Option values can be providers, which are evaluated after all projects are configured, so they can resolve root project configurations.
+The task fails if an option is set to different values, e.g. by two plugins configuring the same component.

@@ -19,10 +19,11 @@ package com.palantir.gradle.ideaconfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import org.gradle.StartParameter;
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.Task;
 
 public class IdeaConfigurationPlugin implements Plugin<Project> {
 
@@ -39,15 +40,22 @@ public class IdeaConfigurationPlugin implements Plugin<Project> {
             return;
         }
 
-        TaskProvider<UpdateExternalDependenciesXml> updateTask = project.getTasks()
-                .register("updateExternalDepsXml", UpdateExternalDependenciesXml.class, task -> {
-                    task.getDependencies().set(extension.getExternalDependencies());
-                });
+        registerSyncTask(project, "updateExternalDepsXml", UpdateExternalDependenciesXml.class, task -> {
+            task.getDependencies().set(extension.getExternalDependencies());
+        });
+        registerSyncTask(project, "updateIdeaComponentsXml", UpdateIdeaComponentsXml.class, task -> {
+            task.getComponents().set(extension.getComponents());
+        });
+    }
+
+    private static <T extends Task> void registerSyncTask(
+            Project project, String name, Class<T> type, Action<? super T> configure) {
+        project.getTasks().register(name, type, configure);
 
         // Add the task to the Gradle start parameters so it executes automatically.
         StartParameter startParameter = project.getGradle().getStartParameter();
         List<String> taskNames = new ArrayList<>(startParameter.getTaskNames());
-        taskNames.add(":" + updateTask.getName());
+        taskNames.add(":" + name);
         startParameter.setTaskNames(taskNames);
     }
 }
